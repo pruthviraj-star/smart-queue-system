@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Queue System | GH Raisoni College</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* Animated gradient background */
+    body {
+      background: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Moving gradient orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: orbFloat 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 500px; height: 500px; background: #3b82f6; top: -100px; left: -100px; animation-delay: 0s; }
+    .orb-2 { width: 400px; height: 400px; background: #8b5cf6; top: 50%; right: -100px; animation-delay: 3s; }
+    .orb-3 { width: 300px; height: 300px; background: #06b6d4; bottom: -50px; left: 30%; animation-delay: 6s; }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+
+    /* Glass morphism */
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* 3D tilt card effect */
+    .tilt-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+      cursor: default;
+    }
+    .tilt-card:hover {
+      transform: perspective(1000px) rotateX(-3deg) rotateY(3deg) translateY(-8px);
+      box-shadow: 20px 20px 60px rgba(59,130,246,0.2), -5px -5px 20px rgba(255,255,255,0.05);
+    }
+
+    /* Glow button */
+    .glow-btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .glow-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    .glow-btn:hover::before { left: 100%; }
+    .glow-btn:hover {
+      box-shadow: 0 0 30px rgba(59,130,246,0.6);
+      transform: translateY(-2px);
+    }
+
+    /* Animated border */
+    .animated-border {
+      position: relative;
+    }
+    .animated-border::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4, #3b82f6);
+      background-size: 300%;
+      border-radius: inherit;
+      animation: borderFlow 4s linear infinite;
+      z-index: -1;
+    }
+    @keyframes borderFlow {
+      0% { background-position: 0%; }
+      100% { background-position: 300%; }
+    }
+
+    /* Pulse dot */
+    .pulse-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+    /* Counter number animation */
+    .counter-animate { animation: fadeInUp 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeInUp {
+      from { opacity:0; transform: translateY(30px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+    .counter-animate:nth-child(1) { animation-delay: 0.1s; }
+    .counter-animate:nth-child(2) { animation-delay: 0.2s; }
+    .counter-animate:nth-child(3) { animation-delay: 0.3s; }
+
+    /* Floating badge */
+    @keyframes badgeFloat {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .badge-float { animation: badgeFloat 3s ease-in-out infinite; }
+
+    /* Navbar scroll effect handled by JS */
+    nav { transition: all 0.3s ease; }
+    nav.scrolled {
+      background: rgba(15,23,42,0.9) !important;
+      backdrop-filter: blur(30px);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+
+    /* Number count up */
+    .stat-num {
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Section titles */
+    .section-title {
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Shine effect on logo */
+    .logo-shine {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      position: relative;
+      overflow: hidden;
+    }
+    .logo-shine::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+      animation: shine 3s ease-in-out infinite;
+    }
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    /* Steps connector line */
+    .step-line {
+      position: absolute;
+      top: 24px; left: calc(50% + 24px);
+      width: calc(100% - 48px);
+      height: 2px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      opacity: 0.3;
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+    @keyframes scrollBounce {
+      0%,100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(8px); opacity: 0.5; }
+    }
+
+    .relative { position: relative; }
+    .z-10 { z-index: 10; }
+  </style>
+</head>
+<body class="text-white">
+
+  <!-- Background Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Navbar -->
+  <nav id="navbar" class="glass px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="logo-shine w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg shadow-blue-500/30">Q</div>
+      <div>
+        <h1 class="font-bold text-white leading-tight">SmartQueue</h1>
+        <p class="text-xs text-blue-300">GH Raisoni College, Jalgaon</p>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <a href="student-login.html"
+        class="px-4 py-2 rounded-xl text-sm font-semibold text-blue-300 hover:text-white hover:bg-white/10 transition">
+        Student
+      </a>
+      <a href="staff-login.html"
+        class="glow-btn px-4 py-2 bg-blue-600 rounded-xl text-sm font-semibold">
+        Staff Login
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="relative z-10 text-center py-24 px-4">
+    <div class="badge-float inline-flex items-center gap-2 glass border border-blue-500/30 rounded-full px-4 py-2 text-blue-300 text-sm mb-8">
+      <span class="pulse-dot w-2 h-2 bg-green-400 rounded-full inline-block"></span>
+      System is Live — Real-time Queue Management
+    </div>
+
+    <h2 class="text-6xl font-extrabold mb-6 leading-tight">
+      Skip the Line.<br/>
+      <span class="stat-num">Join Virtually.</span>
+    </h2>
+
+    <p class="text-slate-400 text-xl max-w-lg mx-auto mb-12 leading-relaxed">
+      No more standing in queues. Get a virtual token, track your position in real-time, and show up only when it's your turn.
+    </p>
+
+    <div class="flex justify-center gap-4 flex-wrap mb-16">
+      <a href="student_register.html"
+        class="glow-btn px-6 py-4 bg-blue-600 rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/30">
+        Get Started →
+      </a>
+      <a href="student-login.html"
+        class="glow-btn glass px-8 py-4 rounded-2xl font-bold text-lg hover:bg-white/10">
+        Login
+      </a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="flex justify-center gap-12 flex-wrap">
+      <div class="text-center">
+        <p class="text-4xl font-extrabold stat-num">3</p>
+        <p class="text-slate-400 text-sm mt-1">Departments</p>
+      </div>
+      <div class="w-px bg-white/10 hidden md:block"></div>
+      <div class="text-center">
+        <p class="text-4xl font-extrabold stat-num">∞</p>
+        <p class="text-slate-400 text-sm mt-1">Real-time Updates</p>
+      </div>
+      <div class="w-px bg-white/10 hidden md:block"></div>
+      <div class="text-center">
+        <p class="text-4xl font-extrabold stat-num">AI</p>
+        <p class="text-slate-400 text-sm mt-1">Wait Prediction</p>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator mt-16 flex flex-col items-center gap-2 text-slate-500 text-xs">
+      <span>Scroll to explore</span>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Live Counters -->
+  <div class="relative z-10 max-w-4xl mx-auto px-4 mb-20">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 mb-3">
+        <span class="pulse-dot w-3 h-3 bg-green-400 rounded-full inline-block"></span>
+        <span class="text-green-400 text-sm font-semibold uppercase tracking-widest">Live</span>
+      </div>
+      <h3 class="text-3xl font-bold section-title">Queue Status</h3>
+    </div>
+
+    <div id="live-counters" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Skeleton -->
+      <div class="glass rounded-2xl p-6 animate-pulse">
+        <div class="h-4 bg-white/10 rounded mb-3 w-3/4"></div>
+        <div class="h-8 bg-white/10 rounded w-1/2"></div>
+      </div>
+      <div class="glass rounded-2xl p-6 animate-pulse">
+        <div class="h-4 bg-white/10 rounded mb-3 w-3/4"></div>
+        <div class="h-8 bg-white/10 rounded w-1/2"></div>
+      </div>
+      <div class="glass rounded-2xl p-6 animate-pulse">
+        <div class="h-4 bg-white/10 rounded mb-3 w-3/4"></div>
+        <div class="h-8 bg-white/10 rounded w-1/2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How it Works -->
+  <div class="relative z-10 max-w-4xl mx-auto px-4 mb-24">
+    <div class="text-center mb-12">
+      <h3 class="text-3xl font-bold section-title">How It Works</h3>
+      <p class="text-slate-400 mt-2">Four simple steps to skip the queue</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="tilt-card glass rounded-2xl p-6 text-center">
+        <div class="w-12 h-12 bg-blue-600/30 border border-blue-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">🔐</div>
+        <div class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">Step 1</div>
+        <h4 class="font-bold text-white mb-2">Login</h4>
+        <p class="text-slate-400 text-sm">Login with your student account.</p>
+      </div>
+      <div class="tilt-card glass rounded-2xl p-6 text-center">
+        <div class="w-12 h-12 bg-purple-600/30 border border-purple-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">🎫</div>
+        <div class="text-purple-400 text-xs font-bold uppercase tracking-widest mb-2">Step 2</div>
+        <h4 class="font-bold text-white mb-2">Get Token</h4>
+        <p class="text-slate-400 text-sm">Receive your virtual token instantly.</p>
+      </div>
+      <div class="tilt-card glass rounded-2xl p-6 text-center">
+        <div class="w-12 h-12 bg-cyan-600/30 border border-cyan-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">📍</div>
+        <div class="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-2">Step 3</div>
+        <h4 class="font-bold text-white mb-2">Wait Anywhere</h4>
+        <p class="text-slate-400 text-sm">Monitor your position in real-time.</p>
+      </div>
+      <div class="tilt-card glass rounded-2xl p-6 text-center">
+        <div class="w-12 h-12 bg-green-600/30 border border-green-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">✅</div>
+        <div class="text-green-400 text-xs font-bold uppercase tracking-widest mb-2">Step 4</div>
+        <h4 class="font-bold text-white mb-2">Get Served</h4>
+        <p class="text-slate-400 text-sm">Go to the counter when called.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="relative z-10 max-w-2xl mx-auto px-4 mb-24 text-center">
+    <div class="animated-border glass rounded-3xl p-10">
+      <h3 class="text-3xl font-bold mb-3">Ready to Skip the Queue?</h3>
+      <p class="text-slate-400 mb-8">Join thousands of students who no longer wait in lines.</p>
+      <a href="student_register.html"
+        class="glow-btn inline-block px-10 py-4 bg-blue-600 rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/30">
+        Create Free Account →
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-white/10 mt-10">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+
+      <!-- Brand -->
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="logo-shine w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm">Q</div>
+          <div>
+            <p class="font-bold text-white">SmartQueue</p>
+            <p class="text-xs text-blue-300">Virtual Queue System</p>
+          </div>
+        </div>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          A smart virtual queue management system built for GH Raisoni College of Engineering and Management, Jalgaon.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="text-white font-bold mb-4 uppercase tracking-widest text-xs">Quick Links</h4>
+        <ul class="space-y-2">
+          <li><a href="index.html" class="text-slate-400 hover:text-white text-sm transition">🏠 Home</a></li>
+          <li><a href="student_register.html" class="text-slate-400 hover:text-white text-sm transition">📝 Register</a></li>
+          <li><a href="student-login.html" class="text-slate-400 hover:text-white text-sm transition">🎓 Student Login</a></li>
+          <li><a href="staff-login.html" class="text-slate-400 hover:text-white text-sm transition">⚙️ Staff Login</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact & Social -->
+      <div>
+        <h4 class="text-white font-bold mb-4 uppercase tracking-widest text-xs">Connect</h4>
+        <ul class="space-y-2">
+          <li>
+            <a href="https://ghrcemj.raisoni.net/" target="_blank"
+              class="text-slate-400 hover:text-white text-sm transition flex items-center gap-2">
+              🌐 Official Website
+            </a>
+          </li>
+          <li>
+            <a href="https://www.instagram.com/ghrce_jalgaon" target="_blank"
+              class="text-slate-400 hover:text-pink-400 text-sm transition flex items-center gap-2">
+              📸 Instagram
+            </a>
+          </li>
+          <li>
+            <a href="mailto:info@raisoni.net"
+              class="text-slate-400 hover:text-blue-400 text-sm transition flex items-center gap-2">
+              📧 info@raisoni.net
+            </a>
+          </li>
+          <li>
+            <a href="tel:+91-0257-2264881"
+              class="text-slate-400 hover:text-green-400 text-sm transition flex items-center gap-2">
+              📞 +91-0257-2264881
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-white/5 pt-6 flex flex-col md:flex-row justify-between items-center gap-3">
+      <p class="text-slate-500 text-xs">© 2026 SmartQueue — GH Raisoni College of Engineering and Management, Jalgaon</p>
+      <p class="text-slate-600 text-xs">Built with ❤️ by BCA Department</p>
+    </div>
+  </div>
+</footer>
+
+  <script type="module">
+    import { db } from './firebase-config.js';
+    import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      if (window.scrollY > 50) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    });
+
+    // Live counters
+    const liveCounters = document.getElementById('live-counters');
+    onSnapshot(collection(db, 'queues'), (snapshot) => {
+      liveCounters.innerHTML = '';
+      snapshot.forEach((queueDoc) => {
+        const q = queueDoc.data();
+        const waiting = Math.max(0, q.lastToken - q.currentCounter);
+        const isLow = waiting === 0;
+        const isMed = waiting > 0 && waiting <= 3;
+        const dotColor = isLow ? 'bg-green-400' : isMed ? 'bg-yellow-400' : 'bg-red-400';
+        const waitColor = isLow ? 'text-green-400' : isMed ? 'text-yellow-400' : 'text-red-400';
+        const waitText = isLow ? 'No wait!' : `${waiting} waiting`;
+        const icons = { fees_counter: '💰', admissions: '📋', scholarship: '🎓' };
+        const icon = icons[queueDoc.id] || '🏢';
+
+        const card = document.createElement('div');
+        card.className = 'tilt-card glass rounded-2xl p-6 counter-animate';
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">${icon}</span>
+              <h4 class="font-bold text-white">${q.deptName}</h4>
+            </div>
+            <span class="flex items-center gap-1 text-xs text-slate-400">
+              <span class="w-2 h-2 rounded-full ${dotColor} inline-block pulse-dot"></span> Live
+            </span>
+          </div>
+          <p class="text-5xl font-extrabold ${waitColor} mb-2">${waiting}</p>
+          <p class="text-slate-400 text-sm mb-3">${waitText}</p>
+          <div class="border-t border-white/5 pt-3 flex justify-between items-center">
+            <p class="text-slate-500 text-xs">Now serving</p>
+            <p class="text-white font-bold">#${q.currentCounter}</p>
+          </div>`;
+        liveCounters.appendChild(card);
+      });
+    });
+  </script>
+
+</body>
+</html>

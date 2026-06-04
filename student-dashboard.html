@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | SmartQueue</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #0f172a; min-height: 100vh; overflow-x: hidden; }
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(80px); opacity: 0.1;
+      animation: orbFloat 8s ease-in-out infinite;
+      pointer-events: none; z-index: 0;
+    }
+    .orb-1 { width: 500px; height: 500px; background: #3b82f6; top: -100px; left: -100px; }
+    .orb-2 { width: 300px; height: 300px; background: #8b5cf6; bottom: 100px; right: -50px; animation-delay: 4s; }
+    @keyframes orbFloat {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-25px); }
+    }
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .tilt-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+    }
+    .tilt-card:hover {
+      transform: perspective(1000px) rotateX(-2deg) rotateY(2deg) translateY(-6px);
+      box-shadow: 15px 15px 40px rgba(59,130,246,0.15);
+    }
+    .glow-btn {
+      position: relative; overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .glow-btn::before {
+      content: ''; position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    .glow-btn:hover::before { left: 100%; }
+    .glow-btn:hover { box-shadow: 0 0 25px rgba(59,130,246,0.5); transform: translateY(-2px); }
+    .logo-shine {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      position: relative; overflow: hidden;
+    }
+    .logo-shine::after {
+      content: ''; position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
+      animation: shine 3s ease-in-out infinite;
+    }
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+    .pulse-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+    .card-enter { animation: cardEnter 0.5s ease forwards; opacity: 0; }
+    @keyframes cardEnter {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card-enter:nth-child(1) { animation-delay: 0.1s; }
+    .card-enter:nth-child(2) { animation-delay: 0.2s; }
+    .card-enter:nth-child(3) { animation-delay: 0.3s; }
+
+    /* Chatbot */
+    #chat-window { transition: all 0.3s ease; }
+    #chat-bubble { transition: all 0.3s ease; }
+    #chat-bubble:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(59,130,246,0.6); }
+  </style>
+</head>
+<body class="min-h-screen text-white">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Offline Banner -->
+  <div id="offline-banner" class="hidden fixed top-0 left-0 right-0 z-[100] bg-red-500/90 backdrop-blur text-white text-center py-3 text-sm font-semibold">
+    📵 You are offline — please check your connection.
+  </div>
+
+  <!-- Navbar -->
+  <nav class="glass px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="logo-shine w-9 h-9 rounded-xl flex items-center justify-center font-bold">Q</div>
+      <div>
+        <h1 class="font-bold text-white leading-tight">SmartQueue</h1>
+        <p class="text-xs text-blue-300">Student Portal</p>
+      </div>
+    </a>
+    <div class="flex items-center gap-4">
+      <div class="hidden md:flex items-center gap-2 glass px-3 py-1.5 rounded-full">
+        <span class="pulse-dot w-2 h-2 bg-green-400 rounded-full inline-block"></span>
+        <span id="user-name" class="text-sm text-slate-300"></span>
+      </div>
+      <button onclick="logout()"
+        class="glow-btn px-4 py-2 glass rounded-xl text-sm font-semibold hover:bg-white/10">
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Connecting message -->
+  <div id="connecting-msg" class="hidden relative z-10 text-center py-2 text-xs text-yellow-400 bg-yellow-500/10 border-b border-yellow-500/20">
+    ⏳ Connecting to server... please wait
+  </div>
+
+  <div class="relative z-10 max-w-2xl mx-auto px-4 py-10">
+    <!-- Greeting -->
+    <div class="mb-10">
+      <p class="text-slate-400 text-sm uppercase tracking-widest mb-2">Student Dashboard</p>
+      <h2 class="text-4xl font-extrabold text-white">Hello, <span id="greeting-name" class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Student</span> 👋</h2>
+      <p class="text-slate-400 mt-2">Select a department below to join its virtual queue.</p>
+    </div>
+
+    <!-- Queue Cards -->
+    <div id="queue-list" class="grid gap-5"></div>
+  </div>
+
+  <!-- Firebase Module Script -->
+  <script type="module">
+    import { auth, db } from './firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { collection, getDocs, doc, getDoc, addDoc, updateDoc, increment, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'student-login.html'; return; }
+      currentUser = user;
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        const name = userDoc.data().name.split(' ')[0];
+        document.getElementById('user-name').textContent = userDoc.data().name;
+        document.getElementById('greeting-name').textContent = name;
+      }
+      loadQueues();
+    });
+
+    async function loadQueues() {
+      const queueList = document.getElementById('queue-list');
+
+      // Show skeleton loaders
+      queueList.innerHTML = `
+        <div class="glass rounded-2xl p-5 flex items-center gap-4 animate-pulse">
+          <div class="w-12 h-12 bg-white/10 rounded-xl flex-shrink-0"></div>
+          <div class="flex-1">
+            <div class="h-4 bg-white/10 rounded w-1/2 mb-2"></div>
+            <div class="h-3 bg-white/10 rounded w-1/3"></div>
+          </div>
+          <div class="w-16 h-9 bg-white/10 rounded-xl"></div>
+        </div>
+        <div class="glass rounded-2xl p-5 flex items-center gap-4 animate-pulse">
+          <div class="w-12 h-12 bg-white/10 rounded-xl flex-shrink-0"></div>
+          <div class="flex-1">
+            <div class="h-4 bg-white/10 rounded w-1/2 mb-2"></div>
+            <div class="h-3 bg-white/10 rounded w-1/3"></div>
+          </div>
+          <div class="w-16 h-9 bg-white/10 rounded-xl"></div>
+        </div>
+        <div class="glass rounded-2xl p-5 flex items-center gap-4 animate-pulse">
+          <div class="w-12 h-12 bg-white/10 rounded-xl flex-shrink-0"></div>
+          <div class="flex-1">
+            <div class="h-4 bg-white/10 rounded w-1/2 mb-2"></div>
+            <div class="h-3 bg-white/10 rounded w-1/3"></div>
+          </div>
+          <div class="w-16 h-9 bg-white/10 rounded-xl"></div>
+        </div>`;
+
+      // Show connecting banner if Firestore takes too long
+      const connectingTimeout = setTimeout(() => {
+        const connecting = document.getElementById('connecting-msg');
+        if (connecting) connecting.classList.remove('hidden');
+      }, 3000);
+
+      const queuesSnapshot = await getDocs(collection(db, 'queues'));
+
+      clearTimeout(connectingTimeout);
+
+      // ✅ FIX: Clear skeleton loaders before appending real cards
+      queueList.innerHTML = '';
+
+      // Hide connecting message
+      const connecting = document.getElementById('connecting-msg');
+      if (connecting) connecting.classList.add('hidden');
+
+      const icons = { fees_counter: '💰', admissions: '📋', scholarship: '🎓' };
+
+      queuesSnapshot.forEach((queueDoc) => {
+        const queue = queueDoc.data();
+        const queueId = queueDoc.id;
+        const waiting = Math.max(0, queue.lastToken - queue.currentCounter);
+        const waitBg = waiting === 0
+          ? 'bg-green-500/10 border-green-500/20 text-green-400'
+          : waiting <= 3
+            ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400'
+            : 'bg-red-500/10 border-red-500/20 text-red-400';
+        const waitText = waiting === 0 ? '✓ No wait' : `${waiting} waiting`;
+        const icon = icons[queueId] || '🏢';
+
+        const card = document.createElement('div');
+        card.className = 'tilt-card glass rounded-2xl p-4 md:p-6 flex justify-between items-center card-enter gap-3';
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 glass rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+              ${icon}
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white mb-1 leading-tight">${queue.deptName}</h3>
+              <span class="text-xs font-semibold px-3 py-1 rounded-full border ${waitBg}">${waitText}</span>
+              <p class="text-xs text-slate-500 mt-2">Now serving: <span class="text-slate-300 font-semibold">#${queue.currentCounter}</span></p>
+            </div>
+          </div>
+          <button onclick="joinQueue('${queueId}', '${queue.deptName}')"
+            class="glow-btn bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-sm flex-shrink-0">
+            Join →
+          </button>`;
+        queueList.appendChild(card);
+      });
+    }
+
+    window.joinQueue = async function(queueId, deptName) {
+      try {
+        // Check if student is already in ANY queue
+        const queuesSnap = await getDocs(collection(db, 'queues'));
+        for (const queueDoc of queuesSnap.docs) {
+          const existingToken = query(
+            collection(db, 'queues', queueDoc.id, 'tokens'),
+            where('studentId', '==', currentUser.uid),
+            where('status', '==', 'waiting')
+          );
+          const existingSnap = await getDocs(existingToken);
+          if (!existingSnap.empty) {
+            alert(`⚠️ You are already in the ${queueDoc.data().deptName} queue!\n\nPlease leave that queue first before joining another.`);
+            return;
+          }
+        }
+
+        const queueRef = doc(db, 'queues', queueId);
+        const queueSnap = await getDoc(queueRef);
+        const newTokenNumber = queueSnap.data().lastToken + 1;
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        const studentName = userDoc.data().name;
+
+        const tokenRef = await addDoc(collection(db, 'queues', queueId, 'tokens'), {
+          tokenNumber: newTokenNumber,
+          studentId: currentUser.uid,
+          studentName: studentName,
+          status: 'waiting',
+          timestamp: new Date()
+        });
+
+        await updateDoc(queueRef, { lastToken: increment(1) });
+        window.location.href = `student-token.html?queueId=${queueId}&tokenId=${tokenRef.id}`;
+      } catch (error) {
+        alert('Failed to join queue. Please try again.');
+        console.error(error);
+      }
+    }
+
+    window.logout = async function() {
+      await signOut(auth);
+      window.location.href = 'student-login.html';
+    }
+  </script>
+
+  <!-- Chat Bubble -->
+  <div id="chat-bubble" onclick="toggleChat()"
+    class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg shadow-blue-500/40 z-50">
+    <span class="text-2xl">🤖</span>
+  </div>
+
+  <!-- Chat Window -->
+  <div id="chat-window"
+    class="fixed bottom-24 right-6 w-80 glass rounded-2xl shadow-2xl z-50 hidden flex-col overflow-hidden"
+    style="height: 440px;">
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 flex justify-between items-center flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">🤖</span>
+        <div>
+          <p class="font-bold text-white text-sm">Queue Assistant</p>
+          <p class="text-blue-200 text-xs">Powered by AI</p>
+        </div>
+      </div>
+      <button onclick="toggleChat()" class="text-white hover:text-blue-200 text-xl">✕</button>
+    </div>
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
+      <div class="flex gap-2">
+        <span class="text-lg flex-shrink-0">🤖</span>
+        <div class="bg-white/10 rounded-2xl rounded-tl-none px-3 py-2 text-sm text-white max-w-xs">
+          Hi! I'm your Queue Assistant. Ask me anything about queues, admissions, scholarships, or college info! 😊
+        </div>
+      </div>
+    </div>
+    <div class="p-3 border-t border-white/10 flex gap-2 flex-shrink-0">
+      <input id="chat-input" type="text" placeholder="Ask something..."
+        class="flex-1 bg-white/10 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-blue-400"
+        onkeydown="if(event.key==='Enter') sendMessage()"/>
+      <button id="send-btn" onclick="sendMessage()"
+        class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-xl text-sm font-bold transition">
+        ➤
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const AI_KEY = 'sk-or-v1-XXXXXXXX';
+    const AI_URL = 'https://openrouter.ai/api/v1/chat/completions';
+    var chatHistory = [];
+    var isSending = false;
+
+    function toggleChat() {
+      const win = document.getElementById('chat-window');
+      win.classList.toggle('hidden');
+      win.classList.toggle('flex');
+      if (!win.classList.contains('hidden')) {
+        document.getElementById('chat-input').focus();
+      }
+    }
+
+    async function getLiveQueueInfo() {
+      try {
+        const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+        const firebaseConfig = {
+          apiKey: "AIzaSyCJTJfalMBqFK6J8kbZLDzMFv-nKJpduso",
+          authDomain: "smart-queue-system-4610f.firebaseapp.com",
+          projectId: "smart-queue-system-4610f",
+          storageBucket: "smart-queue-system-4610f.firebasestorage.app",
+          messagingSenderId: "111782943300",
+          appId: "1:111782943300:web:028513d6f7f35cc0973a11"
+        };
+        const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const snap = await getDocs(collection(db, 'queues'));
+        let info = '';
+        snap.forEach((d) => {
+          const q = d.data();
+          const waiting = Math.max(0, q.lastToken - q.currentCounter);
+          info += `${q.deptName}: Now serving #${q.currentCounter}, ${waiting} people waiting.\n`;
+        });
+        return info || 'No queue data available.';
+      } catch(e) {
+        return 'Queue data unavailable.';
+      }
+    }
+
+    function addBubble(html, side = 'bot') {
+      const msgs = document.getElementById('chat-messages');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex gap-2' + (side === 'user' ? ' justify-end' : '');
+      if (side === 'bot') {
+        wrapper.innerHTML = `<span class="text-lg flex-shrink-0">🤖</span>
+          <div class="bg-white/10 rounded-2xl rounded-tl-none px-3 py-2 text-sm text-white max-w-xs">${html}</div>`;
+      } else {
+        wrapper.innerHTML = `<div class="bg-blue-600 rounded-2xl rounded-tr-none px-3 py-2 text-sm text-white max-w-xs">${html}</div>`;
+      }
+      msgs.appendChild(wrapper);
+      msgs.scrollTop = msgs.scrollHeight;
+      return wrapper;
+    }
+
+    async function sendMessage() {
+      if (isSending) return;
+      const input = document.getElementById('chat-input');
+      const userText = input.value.trim();
+      if (!userText) return;
+
+      isSending = true;
+      document.getElementById('send-btn').disabled = true;
+      input.value = '';
+
+      addBubble(userText, 'user');
+      const typingEl = addBubble('<span class="animate-pulse text-slate-400">Typing...</span>', 'bot');
+
+      const queueInfo = await getLiveQueueInfo();
+
+      const systemPrompt = `You are a helpful assistant for GH Raisoni College of Engineering and Management, Jalgaon. Help students with queue and college info.
+
+LIVE QUEUE STATUS:
+${queueInfo}
+
+COLLEGE INFO:
+- Office Hours: Mon-Sat 9AM-5PM
+- Fees Counter: Ground floor, Admin Block
+- Admissions: First floor, Admin Block
+- Scholarship: Second floor, Admin Block
+- Contact: 0257-123456 | info@raisoni.edu
+- Scholarship deadlines: October and March
+- Fees Counter busy on Mondays
+- Best time: Tue-Thu 11AM-1PM
+
+Keep answers short and friendly.`;
+
+      chatHistory.push({ role: 'user', content: userText });
+
+      try {
+        const response = await fetch(AI_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AI_KEY}`,
+            'HTTP-Referer': 'http://127.0.0.1:5500',
+            'X-Title': 'SmartQueue Assistant'
+          },
+          body: JSON.stringify({
+            model: 'openrouter/auto',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              ...chatHistory
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content || 'Sorry, could not get a response.';
+        chatHistory.push({ role: 'assistant', content: reply });
+        typingEl.remove();
+        addBubble(reply, 'bot');
+
+      } catch (error) {
+        typingEl.remove();
+        addBubble('<span class="text-red-400">Something went wrong. Please try again.</span>', 'bot');
+        chatHistory.pop();
+        console.error(error);
+      } finally {
+        isSending = false;
+        document.getElementById('send-btn').disabled = false;
+        document.getElementById('chat-input').focus();
+      }
+    }
+  </script>
+
+  <!-- Online/Offline Detection -->
+  <script>
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offline-banner');
+      const joinBtns = document.querySelectorAll('button[onclick*="joinQueue"]');
+
+      if (!navigator.onLine) {
+        banner.classList.remove('hidden');
+        joinBtns.forEach(btn => {
+          btn.disabled = true;
+          btn.classList.add('opacity-50', 'cursor-not-allowed');
+        });
+      } else {
+        banner.classList.add('hidden');
+        joinBtns.forEach(btn => {
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        });
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+  </script>
+</body>
+</html>

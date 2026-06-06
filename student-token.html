@@ -1,342 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Your Token | SmartQueue</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="shared.css"/>
+  <script src="theme.js"></script>
   <style>
-    * { font-family: 'Inter', sans-serif; }
-    body { background: #0f172a; min-height: 100vh; overflow-x: hidden; }
-    .orb {
-      position: fixed; border-radius: 50%;
-      filter: blur(80px); opacity: 0.1;
-      animation: orbFloat 8s ease-in-out infinite;
-      pointer-events: none; z-index: 0;
+    .token-section {
+      text-align: center; padding: 40px 28px;
     }
-    .orb-1 { width: 400px; height: 400px; background: #3b82f6; top: -100px; right: -100px; }
-    .orb-2 { width: 300px; height: 300px; background: #8b5cf6; bottom: -50px; left: -50px; animation-delay: 4s; }
-    @keyframes orbFloat {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    .token-label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 28px;
     }
-    .glass {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
+    .dept-name {
+      font-size: 14px; color: var(--text-sub); margin-top: 16px; margin-bottom: 20px;
     }
-    .logo-shine {
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      position: relative; overflow: hidden;
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
     }
-    .logo-shine::after {
-      content: ''; position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
-      animation: shine 3s ease-in-out infinite;
-    }
-    @keyframes shine {
-      0% { transform: translateX(-100%) rotate(45deg); }
-      100% { transform: translateX(100%) rotate(45deg); }
-    }
-
-    /* Token circle */
-    .token-circle {
-      width: 160px; height: 160px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 24px;
-      position: relative;
-    }
-    .token-circle-waiting {
-      background: rgba(59,130,246,0.1);
-      border: 3px solid #3b82f6;
-      animation: pulseRing 2s infinite;
-      box-shadow: 0 0 40px rgba(59,130,246,0.3);
-    }
-    .token-circle-called {
-      background: rgba(34,197,94,0.1);
-      border: 3px solid #22c55e;
-      animation: calledPulse 1s infinite;
-      box-shadow: 0 0 60px rgba(34,197,94,0.5);
-    }
-    @keyframes pulseRing {
-      0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.4), 0 0 40px rgba(59,130,246,0.2); }
-      70% { box-shadow: 0 0 0 20px rgba(59,130,246,0), 0 0 40px rgba(59,130,246,0.2); }
-      100% { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 40px rgba(59,130,246,0.2); }
-    }
-    @keyframes calledPulse {
-      0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5), 0 0 60px rgba(34,197,94,0.3); }
-      70% { box-shadow: 0 0 0 25px rgba(34,197,94,0), 0 0 60px rgba(34,197,94,0.3); }
-      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0), 0 0 60px rgba(34,197,94,0.3); }
-    }
-
-    .token-num-waiting {
-      font-size: 72px; font-weight: 800;
-      background: linear-gradient(135deg, #60a5fa, #a78bfa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .token-num-called {
-      font-size: 72px; font-weight: 800;
-      background: linear-gradient(135deg, #4ade80, #22c55e);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .stat-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px; padding: 16px;
-      text-align: center; transition: all 0.3s;
-    }
-    .stat-card:hover {
-      background: rgba(255,255,255,0.06);
-      transform: translateY(-2px);
-    }
-
-    .glow-btn {
-      position: relative; overflow: hidden;
-      transition: all 0.3s ease;
-    }
-    .glow-btn::before {
-      content: ''; position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s ease;
-    }
-    .glow-btn:hover::before { left: 100%; }
-
-    .card-enter { animation: cardEnter 0.6s ease forwards; }
-    @keyframes cardEnter {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .info-box {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 16px; background: var(--bg); border: 1px solid var(--border-s);
+      border-radius: 14px; font-size: 13px; color: var(--text-sub);
     }
   </style>
 </head>
-<body class="min-h-screen text-white">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
+<body>
 
-  <!-- Navbar -->
-  <nav class="glass px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-    <a href="student-dashboard.html" class="flex items-center gap-3">
-      <div class="logo-shine w-9 h-9 rounded-xl flex items-center justify-center font-bold">Q</div>
-      <h1 class="font-bold text-white">SmartQueue</h1>
+  <div id="offline-banner">📵 You are offline — showing last known data.</div>
+
+  <nav class="sq-nav">
+    <a href="student-dashboard.html" class="sq-logo">
+      <div class="sq-logo-mark">Q</div>
+      <div>
+        <div class="sq-logo-name">SmartQueue</div>
+        <div class="sq-logo-sub">Your Token</div>
+      </div>
     </a>
-    <button onclick="logout()" class="glow-btn px-4 py-2 glass rounded-xl text-sm font-semibold hover:bg-white/10">
-      Logout
-    </button>
+    <div class="sq-nav-actions">
+      <button onclick="logout()" class="sq-btn sq-btn-ghost sq-btn-sm">Logout</button>
+    </div>
   </nav>
 
-  <div class="relative z-10 max-w-md mx-auto px-4 py-10">
+  <div style="max-width:480px;margin:0 auto;padding:40px 20px;display:flex;flex-direction:column;gap:14px;">
 
     <!-- Token Card -->
-    <div class="glass rounded-3xl p-8 text-center mb-6 card-enter">
-      <p class="text-slate-400 text-xs uppercase tracking-widest mb-6">Your Token Number</p>
+    <div class="sq-card sq-fade-in token-section">
+      <div class="token-label">Your Token Number</div>
 
-      <div id="token-circle" class="token-circle token-circle-waiting">
-        <span id="token-number" class="token-num-waiting">--</span>
+      <div id="token-ring" class="sq-token-ring">
+        <span id="token-number" class="sq-token-num">--</span>
       </div>
 
-      <p id="dept-name" class="text-slate-400 text-sm mb-5"></p>
+      <div id="dept-name" class="dept-name"></div>
 
-      <div id="status-badge"
-        class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold bg-yellow-500/10 text-yellow-300 border border-yellow-500/20">
-        <span class="w-2 h-2 bg-yellow-400 rounded-full inline-block animate-pulse"></span>
+      <div id="status-badge" class="sq-badge sq-badge-waiting" style="margin:0 auto;">
+        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;opacity:0.7;display:inline-block;animation:livePulse 2s infinite;"></span>
         Waiting in queue
       </div>
     </div>
 
     <!-- Stats -->
-    <div class="glass rounded-2xl p-6 mb-6 card-enter" style="animation-delay:0.1s">
-      <div class="grid grid-cols-3 gap-3">
-        <div class="stat-card">
-          <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Now Serving</p>
-          <p id="current-counter" class="text-3xl font-extrabold text-green-400">--</p>
+    <div class="sq-card sq-fade-in">
+      <div class="stats-grid">
+        <div class="sq-stat">
+          <div class="sq-stat-label">Now Serving</div>
+          <div id="current-counter" class="sq-stat-value">--</div>
         </div>
-        <div class="stat-card">
-          <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Your Position</p>
-          <p id="your-position" class="text-3xl font-extrabold text-blue-400">--</p>
+        <div class="sq-stat">
+          <div class="sq-stat-label">Your Position</div>
+          <div id="your-position" class="sq-stat-value">--</div>
         </div>
-        <div class="stat-card">
-          <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Est. Wait</p>
-          <p id="est-wait" class="text-3xl font-extrabold text-purple-400">--</p>
+        <div class="sq-stat">
+          <div class="sq-stat-label">Est. Wait</div>
+          <div id="est-wait" class="sq-stat-value" style="font-size:24px;">--</div>
         </div>
       </div>
-      <p id="ai-label" class="text-center text-xs text-slate-500 mt-4 hidden">
-        🤖 AI predicted based on real service history
+      <p id="ai-label" style="display:none;text-align:center;font-size:11px;color:var(--text-dim);margin-top:14px;">
+        🤖 Wait time based on real service history
       </p>
     </div>
 
     <!-- Info -->
-    <div class="glass rounded-2xl p-4 mb-6 flex items-center gap-3 card-enter" style="animation-delay:0.2s">
-      <span class="text-2xl">💡</span>
-      <p class="text-slate-400 text-sm">You can close this page and come back — your token is saved!</p>
+    <div class="info-box sq-fade-in">
+      <span style="font-size:20px;flex-shrink:0;">💡</span>
+      <span>You can close this page and come back — your token is saved.</span>
     </div>
 
-    <!-- Leave Button -->
-    <button onclick="leaveQueue()"
-      class="glow-btn w-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 py-3 rounded-xl font-bold transition card-enter"
-      style="animation-delay:0.3s">
+    <!-- Leave Queue -->
+    <button onclick="leaveQueue()" class="sq-btn sq-btn-danger sq-btn-full sq-btn-lg sq-fade-in">
       Leave Queue
     </button>
 
-    <p class="text-center text-xs text-slate-600 mt-4">🔴 Updates automatically in real-time</p>
+    <p style="text-align:center;font-size:11px;color:var(--text-dim);">🔴 Updates automatically in real-time</p>
+
   </div>
 
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { doc, onSnapshot, deleteDoc, getDocs, collection, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {
+      doc, onSnapshot, deleteDoc,
+      getDocs, collection, query, where, orderBy, limit
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const params = new URLSearchParams(window.location.search);
+    const params  = new URLSearchParams(window.location.search);
     const queueId = params.get('queueId');
     const tokenId = params.get('tokenId');
-    if (!queueId || !tokenId) { window.location.href = 'student-dashboard.html'; }
+    if (!queueId || !tokenId) window.location.href = 'student-dashboard.html';
 
     let avgServiceTime = 5 * 60;
+    let unsubToken = null, unsubQueue = null;
+    let lastPosition = null;
 
-  onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href = 'student-login.html'; return; }
-  await requestNotificationPermission();
-  loadAvgServiceTime().then(() => startListening());
-});
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'student-login.html'; return; }
+      await requestNotificationPermission();
+      await loadAvgServiceTime();
+      startListening();
+    });
 
     async function loadAvgServiceTime() {
       try {
-        const completedQuery = query(
+        const snap = await getDocs(query(
           collection(db, 'queues', queueId, 'tokens'),
           where('status', '==', 'complete'),
           where('serviceDuration', '!=', null),
-          orderBy('serviceDuration'),
-          limit(10)
-        );
-        const snap = await getDocs(completedQuery);
-        if (snap.empty) { avgServiceTime = 5 * 60; return; }
+          orderBy('serviceDuration'), limit(10)
+        ));
+        if (snap.empty) return;
         let total = 0, count = 0;
-        snap.forEach((d) => {
-          const duration = d.data().serviceDuration;
-          if (duration && duration > 0 && duration < 3600) { total += duration; count++; }
+        snap.forEach(d => {
+          const dur = d.data().serviceDuration;
+          if (dur > 0 && dur < 3600) { total += dur; count++; }
         });
-        avgServiceTime = count > 0 ? Math.round(total / count) : 5 * 60;
-        if (count > 0) document.getElementById('ai-label').classList.remove('hidden');
-      } catch (e) { avgServiceTime = 5 * 60; }
+        if (count > 0) {
+          avgServiceTime = Math.round(total / count);
+          document.getElementById('ai-label').style.display = 'block';
+        }
+      } catch { /* use default */ }
     }
 
-    function formatWaitTime(seconds) {
-      if (seconds < 60) return seconds + 's';
-      const mins = Math.round(seconds / 60);
-      if (mins < 60) return mins + 'm';
-      return Math.floor(mins/60) + 'h ' + (mins%60) + 'm';
+    function formatWait(secs) {
+      if (secs < 60) return secs + 's';
+      const m = Math.round(secs / 60);
+      if (m < 60) return m + 'm';
+      return Math.floor(m/60) + 'h ' + (m%60) + 'm';
     }
+
     async function requestNotificationPermission() {
-  if ('Notification' in window) {
-    const permission = await Notification.requestPermission();
-    return permission === 'granted';
-  }
-  return false;
-}
+      if ('Notification' in window) await Notification.requestPermission();
+    }
 
-function sendNotification(title, body) {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification(title, {
-      body: body,
-      icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827392.png',
-      badge: 'https://cdn-icons-png.flaticon.com/512/1827/1827392.png',
-      vibrate: [200, 100, 200]
-    });
-  }
-}
+    function notify(title, body) {
+      if (Notification?.permission === 'granted')
+        new Notification(title, { body, icon: '/favicon.ico' });
+    }
+
     function startListening() {
-      const tokenRef = doc(db, 'queues', queueId, 'tokens', tokenId);
-      onSnapshot(tokenRef, (tokenSnap) => {
-        if (!tokenSnap.exists()) { window.location.href = 'student-dashboard.html'; return; }
-        const token = tokenSnap.data();
-        document.getElementById('token-number').textContent = token.tokenNumber;
+      // Listen to token doc
+      unsubToken = onSnapshot(doc(db, 'queues', queueId, 'tokens', tokenId), snap => {
+        if (!snap.exists()) { window.location.href = 'student-dashboard.html'; return; }
+        const token  = snap.data();
+        const ring   = document.getElementById('token-ring');
+        const badge  = document.getElementById('status-badge');
+        const numEl  = document.getElementById('token-number');
 
-        const badge = document.getElementById('status-badge');
-        const circle = document.getElementById('token-circle');
-        const tokenNum = document.getElementById('token-number');
+        numEl.textContent = token.tokenNumber;
 
         if (token.status === 'called') {
-          badge.innerHTML = '<span class="w-2 h-2 bg-green-400 rounded-full inline-block animate-ping"></span> 🔔 Your Turn! Go to the counter now!';
-          badge.className = 'inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold bg-green-500/10 text-green-300 border border-green-500/20';
-          circle.className = 'token-circle token-circle-called';
-          tokenNum.className = 'token-num-called';
+          ring.className = 'sq-token-ring called';
+          badge.className = 'sq-badge sq-badge-called';
+          badge.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;animation:livePulse 1s infinite;"></span> 🔔 Your Turn! Head to the counter.';
         } else if (token.status === 'complete') {
-          badge.innerHTML = '✅ Service Complete. Thank you!';
-          badge.className = 'inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold bg-slate-500/10 text-slate-300 border border-slate-500/20';
+          ring.className = 'sq-token-ring';
+          badge.className = 'sq-badge sq-badge-done';
+          badge.textContent = '✓ Service Complete — Thank you!';
         }
       });
 
-      const queueRef = doc(db, 'queues', queueId);
-      onSnapshot(queueRef, (queueSnap) => {
-        const queue = queueSnap.data();
+      // Listen to queue doc
+      unsubQueue = onSnapshot(doc(db, 'queues', queueId), snap => {
+        const queue = snap.data();
         document.getElementById('dept-name').textContent = queue.deptName;
         document.getElementById('current-counter').textContent = queue.currentCounter;
-        const tokenNum = parseInt(document.getElementById('token-number').textContent);
-        if (!isNaN(tokenNum)) {
-          const position = tokenNum - queue.currentCounter;
-          document.getElementById('your-position').textContent = position > 0 ? position : '🎉';
-          document.getElementById('est-wait').textContent = position > 0 ? formatWaitTime(position * avgServiceTime) : '0m';
 
-// Browser notification when position is 3 or less
-if (position === 3) {
-  sendNotification('⏰ Almost Your Turn!', `You are #${position} in the ${queue.deptName} queue. Get ready!`);
-}
-if (position === 1) {
-  sendNotification('🔔 Next Up!', `You are next in the ${queue.deptName} queue. Please head to the counter!`);
-}
+        const myNum = parseInt(document.getElementById('token-number').textContent);
+        if (!isNaN(myNum)) {
+          const position = myNum - queue.currentCounter;
+          document.getElementById('your-position').textContent = position > 0 ? position : '🎉';
+          document.getElementById('est-wait').textContent = position > 0 ? formatWait(position * avgServiceTime) : '0m';
+
+          // Notify at key positions (only once per position change)
+          if (position !== lastPosition) {
+            if (position === 3) notify('⏰ Almost Your Turn!', `#${position} in ${queue.deptName} — get ready!`);
+            if (position === 1) notify('🔔 You Are Next!', `Head to the ${queue.deptName} counter now.`);
+            lastPosition = position;
+          }
         }
       });
     }
 
     window.leaveQueue = async function() {
-      if (!confirm('Are you sure you want to leave the queue?')) return;
+      if (!confirm('Leave the queue?')) return;
+      if (unsubToken) unsubToken();
+      if (unsubQueue) unsubQueue();
       await deleteDoc(doc(db, 'queues', queueId, 'tokens', tokenId));
       window.location.href = 'student-dashboard.html';
-    }
+    };
 
     window.logout = async function() {
+      if (unsubToken) unsubToken();
+      if (unsubQueue) unsubQueue();
       await signOut(auth);
       window.location.href = 'student-login.html';
+    };
+
+    // Offline detection
+    function updateOnlineStatus() {
+      document.getElementById('offline-banner').classList.toggle('show', !navigator.onLine);
+      const btn = document.querySelector('button[onclick="leaveQueue()"]');
+      if (btn) { btn.disabled = !navigator.onLine; }
     }
+    window.addEventListener('online',  updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
   </script>
-  <!-- Offline Banner -->
-<div id="offline-banner" class="hidden fixed top-0 left-0 right-0 z-[100] bg-red-500/90 backdrop-blur text-white text-center py-3 text-sm font-semibold">
-  📵 You are offline — showing last known data. Actions disabled.
-</div>
 
-<script>
-  // Offline detection
-  function updateOnlineStatus() {
-    const banner = document.getElementById('offline-banner');
-    const leaveBtn = document.querySelector('button[onclick="leaveQueue()"]');
-
-    if (!navigator.onLine) {
-      banner.classList.remove('hidden');
-      if (leaveBtn) {
-        leaveBtn.disabled = true;
-        leaveBtn.classList.add('opacity-50', 'cursor-not-allowed');
-      }
-    } else {
-      banner.classList.add('hidden');
-      if (leaveBtn) {
-        leaveBtn.disabled = false;
-        leaveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-      }
-    }
-  }
-
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
-  updateOnlineStatus(); // run on page load
-</script>
 </body>
 </html>

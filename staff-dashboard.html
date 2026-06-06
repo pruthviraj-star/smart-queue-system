@@ -1,209 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Staff Dashboard | SmartQueue</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="shared.css"/>
+  <script src="theme.js"></script>
   <style>
-    * { font-family: 'Inter', sans-serif; }
-    body { background: #0f172a; min-height: 100vh; overflow-x: hidden; }
-    .orb {
-      position: fixed; border-radius: 50%;
-      filter: blur(80px); opacity: 0.1;
-      animation: orbFloat 8s ease-in-out infinite;
-      pointer-events: none; z-index: 0;
-    }
-    .orb-1 { width: 400px; height: 400px; background: #22c55e; top: -100px; left: -100px; }
-    .orb-2 { width: 300px; height: 300px; background: #06b6d4; bottom: -50px; right: -50px; animation-delay: 4s; }
-    @keyframes orbFloat {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
-    }
-    .glass {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    .select-field {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: white; width: 100%;
-      border-radius: 12px; padding: 12px 16px;
-      font-size: 14px; transition: all 0.3s;
-      font-family: 'Inter', sans-serif;
-    }
-    .select-field:focus {
-      outline: none; border-color: #22c55e;
-      background: rgba(34,197,94,0.1);
-      box-shadow: 0 0 20px rgba(34,197,94,0.2);
-    }
-    .select-field option { background: #1e3a5f; color: white; }
-    .glow-btn {
-      position: relative; overflow: hidden;
-      transition: all 0.3s ease;
-    }
-    .glow-btn::before {
-      content: ''; position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s ease;
-    }
-    .glow-btn:hover::before { left: 100%; }
-    .logo-shine {
-      background: linear-gradient(135deg, #22c55e, #06b6d4);
-      position: relative; overflow: hidden;
-    }
-    .logo-shine::after {
-      content: ''; position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
-      animation: shine 3s ease-in-out infinite;
-    }
-    @keyframes shine {
-      0% { transform: translateX(-100%) rotate(45deg); }
-      100% { transform: translateX(100%) rotate(45deg); }
-    }
-    .pulse-dot { animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-    .stat-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px; padding: 20px;
-      text-align: center; transition: all 0.3s;
-    }
-    .stat-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-2px); }
-    .card-enter { animation: cardEnter 0.5s ease forwards; opacity: 0; }
-    @keyframes cardEnter {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .waiting-row {
-      display: flex; justify-content: space-between;
-      align-items: center; padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      transition: all 0.2s;
-    }
-    .waiting-row:last-child { border-bottom: none; }
-    .waiting-row:hover { background: rgba(255,255,255,0.02); border-radius: 8px; padding-left: 8px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   </style>
 </head>
-<body class="min-h-screen text-white">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
+<body>
 
-  <!-- Navbar -->
-  <nav class="glass px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-    <div class="flex items-center gap-3">
-      <div class="logo-shine w-9 h-9 rounded-xl flex items-center justify-center font-bold">⚙</div>
+  <nav class="sq-nav">
+    <a href="index.html" class="sq-logo">
+      <div class="sq-logo-mark">⚙</div>
       <div>
-        <h1 class="font-bold text-white leading-tight">Staff Panel</h1>
-        <p class="text-xs text-green-300">SmartQueue Management</p>
+        <div class="sq-logo-name">Staff Panel</div>
+        <div class="sq-logo-sub">SmartQueue Management</div>
       </div>
-    </div>
-    <div class="flex items-center gap-4">
-      <div class="hidden md:flex items-center gap-2 glass px-3 py-1.5 rounded-full">
-        <span class="pulse-dot w-2 h-2 bg-green-400 rounded-full inline-block"></span>
-        <span id="staff-name" class="text-sm text-slate-300"></span>
+    </a>
+    <div class="sq-nav-actions">
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;border:1px solid var(--border-s);background:var(--bg-card);">
+        <span class="sq-live-dot"></span>
+        <span id="staff-name" style="font-size:12px;color:var(--text-sub);font-weight:500;"></span>
       </div>
-      <button onclick="logout()" class="glow-btn px-4 py-2 glass rounded-xl text-sm font-semibold hover:bg-white/10">
-        Logout
-      </button>
+      <button onclick="logout()" class="sq-btn sq-btn-ghost sq-btn-sm">Logout</button>
     </div>
   </nav>
 
-  <div class="relative z-10 max-w-2xl mx-auto px-4 py-10">
+  <div style="max-width:640px;margin:0 auto;padding:40px 20px;display:flex;flex-direction:column;gap:14px;">
 
-    <!-- Queue Selector -->
-    <div class="glass rounded-2xl p-6 mb-6 card-enter">
-      <label class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3 block">Select Department Queue</label>
-      <select id="queue-select" onchange="loadQueue()" class="select-field">
+    <!-- Queue selector -->
+    <div class="sq-card sq-fade-in">
+      <label class="sq-label">Select Department Queue</label>
+      <select id="queue-select" onchange="loadQueue()" class="sq-input sq-select">
         <option value="">-- Select a Department --</option>
       </select>
     </div>
 
-    <!-- Control Panel -->
-    <div id="control-panel" class="hidden">
+    <!-- Control panel (shown after selection) -->
+    <div id="control-panel" style="display:none;flex-direction:column;gap:14px;">
 
-      <!-- Stats -->
-      <div class="glass rounded-2xl p-6 mb-6 card-enter">
-        <div class="flex items-center gap-2 mb-6">
-          <span class="pulse-dot w-2 h-2 bg-green-400 rounded-full inline-block"></span>
-          <span class="text-sm text-slate-400 font-semibold">Live Queue Data</span>
+      <!-- Live stats -->
+      <div class="sq-card sq-fade-in">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+          <span class="sq-live-dot"></span>
+          <span style="font-size:12px;font-weight:600;color:var(--text-sub);">Live Queue Data</span>
         </div>
-        <div class="grid grid-cols-3 gap-4">
-          <div class="stat-card">
-            <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Now Serving</p>
-            <p id="current-counter" class="text-4xl font-extrabold text-green-400">0</p>
+        <div class="stats-grid">
+          <div class="sq-stat">
+            <div class="sq-stat-label">Now Serving</div>
+            <div id="current-counter" class="sq-stat-value" style="color:var(--accent);">0</div>
           </div>
-          <div class="stat-card">
-            <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Waiting</p>
-            <p id="waiting-count" class="text-4xl font-extrabold text-blue-400">0</p>
+          <div class="sq-stat">
+            <div class="sq-stat-label">Waiting</div>
+            <div id="waiting-count" class="sq-stat-value">0</div>
           </div>
-          <div class="stat-card">
-            <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Total Issued</p>
-            <p id="last-token" class="text-4xl font-extrabold text-slate-300">0</p>
+          <div class="sq-stat">
+            <div class="sq-stat-label">Total Issued</div>
+            <div id="last-token" class="sq-stat-value">0</div>
           </div>
         </div>
       </div>
 
-      <!-- Action Buttons -->
-<div class="grid grid-cols-2 gap-4 mb-4">
-  <button onclick="callNext()"
-    class="glow-btn bg-green-600 hover:bg-green-500 text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-green-500/20 flex items-center justify-center gap-2">
-    <span class="text-xl">➡️</span> Call Next
-  </button>
-  <button onclick="markComplete()"
-    class="glow-btn bg-blue-600 hover:bg-blue-500 text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
-    <span class="text-xl">✅</span> Mark Complete
-  </button>
-</div>
+      <!-- Action buttons -->
+      <div class="action-grid">
+        <button onclick="callNext()" class="sq-btn sq-btn-primary sq-btn-lg">
+          ➡️ Call Next
+        </button>
+        <button onclick="markComplete()" class="sq-btn sq-btn-ghost sq-btn-lg">
+          ✅ Mark Complete
+        </button>
+      </div>
 
-<!-- Reset Button -->
-<div class="mb-6">
-  <button onclick="resetQueue()"
-    class="glow-btn w-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 py-3 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition">
-    <span>🔄</span> Reset Queue for Today
-  </button>
-</div>
+      <!-- Reset -->
+      <button onclick="resetQueue()" class="sq-btn sq-btn-danger sq-btn-full" style="padding:12px;">
+        🔄 Reset Queue for Today
+      </button>
 
-      <!-- Waiting List -->
-      <div class="glass rounded-2xl p-6 card-enter">
-        <div class="flex items-center justify-between mb-5">
-          <h3 class="text-lg font-bold text-white">Waiting List</h3>
-          <span id="waiting-badge"
-            class="bg-blue-500/20 text-blue-300 text-xs px-3 py-1 rounded-full border border-blue-500/20 font-semibold">
-            0 students
-          </span>
+      <!-- Waiting list -->
+      <div class="sq-card sq-fade-in">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <h3 style="font-size:16px;font-weight:600;color:var(--text);">Waiting List</h3>
+          <span id="waiting-badge" class="sq-badge" style="background:var(--bg);border:1px solid var(--border-s);color:var(--text-sub);">0 students</span>
         </div>
         <div id="waiting-list">
-          <p class="text-slate-500 text-sm text-center py-4">No students waiting.</p>
+          <p style="text-align:center;color:var(--text-dim);font-size:13px;padding:20px 0;">No students waiting.</p>
         </div>
       </div>
+
     </div>
   </div>
 
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { doc, getDoc, getDocs, collection, onSnapshot, updateDoc,
-  query, where, orderBy, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {
+      doc, getDoc, getDocs, collection, onSnapshot,
+      updateDoc, query, where, orderBy, increment,
+      deleteDoc, limit
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     let currentQueueId = null;
-    let unsubscribeQueue = null;
-    let unsubscribeTokens = null;
+    let unsubQueue = null, unsubTokens = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) { window.location.href = 'staff-login.html'; return; }
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (!userDoc.exists() || userDoc.data().role !== 'staff') {
-        alert('Access denied.');
-        await signOut(auth);
-        window.location.href = 'staff-login.html';
-        return;
+        alert('Access denied.'); await signOut(auth);
+        window.location.href = 'staff-login.html'; return;
       }
       document.getElementById('staff-name').textContent = userDoc.data().name;
       loadQueueOptions();
@@ -211,134 +119,113 @@
 
     async function loadQueueOptions() {
       const select = document.getElementById('queue-select');
-      const queuesSnap = await getDocs(collection(db, 'queues'));
-      queuesSnap.forEach((q) => {
-        const option = document.createElement('option');
-        option.value = q.id;
-        option.textContent = q.data().deptName;
-        select.appendChild(option);
+      const snap = await getDocs(collection(db, 'queues'));
+      snap.forEach(q => {
+        const opt = document.createElement('option');
+        opt.value = q.id;
+        opt.textContent = q.data().deptName;
+        select.appendChild(opt);
       });
     }
 
     window.loadQueue = function() {
       const select = document.getElementById('queue-select');
       currentQueueId = select.value;
-      if (!currentQueueId) return;
-      document.getElementById('control-panel').classList.remove('hidden');
-      if (unsubscribeQueue) unsubscribeQueue();
-      if (unsubscribeTokens) unsubscribeTokens();
+      if (!currentQueueId) {
+        document.getElementById('control-panel').style.display = 'none';
+        return;
+      }
+      document.getElementById('control-panel').style.display = 'flex';
 
-      const queueRef = doc(db, 'queues', currentQueueId);
-      unsubscribeQueue = onSnapshot(queueRef, (snap) => {
-        const data = snap.data();
-        document.getElementById('current-counter').textContent = data.currentCounter;
-        document.getElementById('last-token').textContent = data.lastToken;
-        const waiting = Math.max(0, data.lastToken - data.currentCounter);
-        document.getElementById('waiting-count').textContent = waiting;
-        document.getElementById('waiting-badge').textContent = waiting + ' students';
+      if (unsubQueue)  unsubQueue();
+      if (unsubTokens) unsubTokens();
+
+      unsubQueue = onSnapshot(doc(db, 'queues', currentQueueId), snap => {
+        const d = snap.data();
+        document.getElementById('current-counter').textContent = d.currentCounter ?? 0;
+        document.getElementById('last-token').textContent      = d.lastToken ?? 0;
       });
 
-      const tokensQuery = query(
-        collection(db, 'queues', currentQueueId, 'tokens'),
-        where('status', '==', 'waiting'),
-        orderBy('tokenNumber')
-      );
-      unsubscribeTokens = onSnapshot(tokensQuery, (snap) => {
-        const waitingList = document.getElementById('waiting-list');
-        waitingList.innerHTML = '';
-        if (snap.empty) {
-          waitingList.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">No students waiting.</p>';
-          return;
+      unsubTokens = onSnapshot(
+        query(collection(db, 'queues', currentQueueId, 'tokens'),
+          where('status', '==', 'waiting'), orderBy('tokenNumber')),
+        snap => {
+          const count = snap.size;
+          document.getElementById('waiting-count').textContent  = count;
+          document.getElementById('waiting-badge').textContent  = count + ' students';
+
+          const list = document.getElementById('waiting-list');
+          list.innerHTML = '';
+          if (snap.empty) {
+            list.innerHTML = '<p style="text-align:center;color:var(--text-dim);font-size:13px;padding:20px 0;">No students waiting.</p>';
+            return;
+          }
+          snap.forEach(tokenDoc => {
+            const t = tokenDoc.data();
+            const row = document.createElement('div');
+            row.className = 'sq-row';
+            row.innerHTML = `
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:var(--bg);border:1px solid var(--border-s);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--text);">${t.tokenNumber}</div>
+                <div>
+                  <div style="font-size:14px;font-weight:600;color:var(--text);">${t.studentName}</div>
+                  <div style="font-size:11px;color:var(--text-dim);">Token #${t.tokenNumber}</div>
+                </div>
+              </div>
+              <span class="sq-badge sq-badge-waiting">Waiting</span>`;
+            list.appendChild(row);
+          });
         }
-        snap.forEach((tokenDoc) => {
-          const t = tokenDoc.data();
-          const row = document.createElement('div');
-          row.className = 'waiting-row';
-          row.innerHTML = `
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 bg-blue-500/20 border border-blue-500/20 rounded-xl flex items-center justify-center text-blue-400 font-bold text-sm">
-                ${t.tokenNumber}
-              </div>
-              <div>
-                <p class="text-white font-semibold text-sm">${t.studentName}</p>
-                <p class="text-slate-500 text-xs">Token #${t.tokenNumber}</p>
-              </div>
-            </div>
-            <span class="text-xs text-yellow-400 bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-500/20 font-semibold">
-              Waiting
-            </span>`;
-          waitingList.appendChild(row);
-        });
-      });
-    }
+      );
+    };
 
     window.callNext = async function() {
       if (!currentQueueId) return;
-      const queueRef = doc(db, 'queues', currentQueueId);
-      const queueSnap = await getDoc(queueRef);
-      const data = queueSnap.data();
-      const nextToken = data.currentCounter + 1;
-      if (nextToken > data.lastToken) { alert('No more students in the queue.'); return; }
-      const tokensSnap = await getDocs(
-        query(collection(db, 'queues', currentQueueId, 'tokens'),
-        where('tokenNumber', '==', nextToken))
-      );
-      tokensSnap.forEach(async (tokenDoc) => {
-        await updateDoc(tokenDoc.ref, { status: 'called', calledAt: new Date() });
-      });
-      await updateDoc(queueRef, { currentCounter: increment(1) });
-    }
+      const nextSnap = await getDocs(query(
+        collection(db, 'queues', currentQueueId, 'tokens'),
+        where('status', '==', 'waiting'), orderBy('tokenNumber', 'asc'), limit(1)
+      ));
+      if (nextSnap.empty) { alert('No more students waiting.'); return; }
+      const nextDoc  = nextSnap.docs[0];
+      const nextNum  = nextDoc.data().tokenNumber;
+      await updateDoc(nextDoc.ref, { status: 'called', calledAt: new Date() });
+      await updateDoc(doc(db, 'queues', currentQueueId), { currentCounter: nextNum });
+    };
 
     window.markComplete = async function() {
       if (!currentQueueId) return;
-      const queueSnap = await getDoc(doc(db, 'queues', currentQueueId));
-      const current = queueSnap.data().currentCounter;
-      const tokensSnap = await getDocs(
-        query(collection(db, 'queues', currentQueueId, 'tokens'),
-        where('tokenNumber', '==', current))
-      );
-      tokensSnap.forEach(async (tokenDoc) => {
-        const tokenData = tokenDoc.data();
-        const calledAt = tokenData.calledAt?.toDate();
+      const qSnap  = await getDoc(doc(db, 'queues', currentQueueId));
+      const current = qSnap.data().currentCounter;
+      const tSnap  = await getDocs(query(
+        collection(db, 'queues', currentQueueId, 'tokens'),
+        where('tokenNumber', '==', current)
+      ));
+      tSnap.forEach(async tDoc => {
+        const calledAt    = tDoc.data().calledAt?.toDate();
         const completedAt = new Date();
         const serviceDuration = calledAt ? Math.round((completedAt - calledAt) / 1000) : null;
-        await updateDoc(tokenDoc.ref, { status: 'complete', completedAt, serviceDuration });
+        await updateDoc(tDoc.ref, { status: 'complete', completedAt, serviceDuration });
       });
-    }
+    };
+
+    window.resetQueue = async function() {
+      if (!currentQueueId) return;
+      if (!confirm('⚠️ Reset queue for today?\n\nThis will set counters to 0 and delete all tokens. Cannot be undone.')) return;
+      try {
+        await updateDoc(doc(db, 'queues', currentQueueId), { currentCounter: 0, lastToken: 0 });
+        const tSnap = await getDocs(collection(db, 'queues', currentQueueId, 'tokens'));
+        await Promise.all(tSnap.docs.map(d => deleteDoc(d.ref)));
+        alert('✓ Queue reset successfully.');
+      } catch { alert('Reset failed. Try again.'); }
+    };
 
     window.logout = async function() {
+      if (unsubQueue)  unsubQueue();
+      if (unsubTokens) unsubTokens();
       await signOut(auth);
       window.location.href = 'staff-login.html';
-    }
-    window.resetQueue = async function() {
-  if (!currentQueueId) return;
-  const confirmed = confirm(
-    '⚠️ Reset queue for today?\n\nThis will:\n- Set counter back to 0\n- Clear all waiting tokens\n\nThis cannot be undone.'
-  );
-  if (!confirmed) return;
-
-  try {
-    // Reset queue counters
-    const queueRef = doc(db, 'queues', currentQueueId);
-    await updateDoc(queueRef, {
-      currentCounter: 0,
-      lastToken: 0
-    });
-
-    // Delete all tokens in sub-collection
-    const tokensSnap = await getDocs(collection(db, 'queues', currentQueueId, 'tokens'));
-    const deletePromises = [];
-    tokensSnap.forEach((tokenDoc) => {
-      deletePromises.push(deleteDoc(tokenDoc.ref));
-    });
-    await Promise.all(deletePromises);
-
-    alert('✅ Queue reset successfully! Ready for today.');
-  } catch (error) {
-    alert('Failed to reset queue. Try again.');
-    console.error(error);
-  }
-}
+    };
   </script>
+
 </body>
 </html>

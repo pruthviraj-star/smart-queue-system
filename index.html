@@ -3,408 +3,293 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Queue System | GH Raisoni College</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <title>SmartQueue — Virtual Queue Utility</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="theme.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            accent: {
+              DEFAULT: '#0071e3',
+              dark: '#2997ff',
+            }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* Animated gradient background */
     body {
-      background: #0f172a;
-      min-height: 100vh;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
       overflow-x: hidden;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #000000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #1c1c1e;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .dark ::-webkit-scrollbar-thumb:hover {
+      background: #2c2c2e;
     }
 
-    /* Moving gradient orbs */
-    .orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.15;
-      animation: orbFloat 8s ease-in-out infinite;
+    /* Video blending background */
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      mix-blend-mode: screen;
+      opacity: 0.35;
+      z-index: 1;
       pointer-events: none;
-      z-index: 0;
-    }
-    .orb-1 { width: 500px; height: 500px; background: #3b82f6; top: -100px; left: -100px; animation-delay: 0s; }
-    .orb-2 { width: 400px; height: 400px; background: #8b5cf6; top: 50%; right: -100px; animation-delay: 3s; }
-    .orb-3 { width: 300px; height: 300px; background: #06b6d4; bottom: -50px; left: 30%; animation-delay: 6s; }
-
-    @keyframes orbFloat {
-      0%, 100% { transform: translateY(0px) scale(1); }
-      50% { transform: translateY(-30px) scale(1.05); }
     }
 
-    /* Glass morphism */
-    .glass {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    /* 3D tilt card effect */
-    .tilt-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      transform-style: preserve-3d;
-      cursor: default;
-    }
-    .tilt-card:hover {
-      transform: perspective(1000px) rotateX(-3deg) rotateY(3deg) translateY(-8px);
-      box-shadow: 20px 20px 60px rgba(59,130,246,0.2), -5px -5px 20px rgba(255,255,255,0.05);
-    }
-
-    /* Glow button */
-    .glow-btn {
+    /* Glow button hover effect */
+    .btn-glow {
       position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .glow-btn::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s ease;
-    }
-    .glow-btn:hover::before { left: 100%; }
-    .glow-btn:hover {
-      box-shadow: 0 0 30px rgba(59,130,246,0.6);
+    .btn-glow:hover {
       transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 113, 227, 0.15);
     }
-
-    /* Animated border */
-    .animated-border {
-      position: relative;
+    .dark .btn-glow:hover {
+      box-shadow: 0 12px 30px rgba(41, 151, 255, 0.2);
     }
-    .animated-border::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4, #3b82f6);
-      background-size: 300%;
-      border-radius: inherit;
-      animation: borderFlow 4s linear infinite;
-      z-index: -1;
-    }
-    @keyframes borderFlow {
-      0% { background-position: 0%; }
-      100% { background-position: 300%; }
-    }
-
-    /* Pulse dot */
-    .pulse-dot { animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-
-    /* Counter number animation */
-    .counter-animate { animation: fadeInUp 0.6s ease forwards; opacity: 0; }
-    @keyframes fadeInUp {
-      from { opacity:0; transform: translateY(30px); }
-      to { opacity:1; transform: translateY(0); }
-    }
-    .counter-animate:nth-child(1) { animation-delay: 0.1s; }
-    .counter-animate:nth-child(2) { animation-delay: 0.2s; }
-    .counter-animate:nth-child(3) { animation-delay: 0.3s; }
-
-    /* Floating badge */
-    @keyframes badgeFloat {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-    .badge-float { animation: badgeFloat 3s ease-in-out infinite; }
-
-    /* Navbar scroll effect handled by JS */
-    nav { transition: all 0.3s ease; }
-    nav.scrolled {
-      background: rgba(15,23,42,0.9) !important;
-      backdrop-filter: blur(30px);
-      box-shadow: 0 4px 30px rgba(0,0,0,0.3);
-    }
-
-    /* Number count up */
-    .stat-num {
-      background: linear-gradient(135deg, #60a5fa, #a78bfa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* Section titles */
-    .section-title {
-      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* Shine effect on logo */
-    .logo-shine {
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      position: relative;
-      overflow: hidden;
-    }
-    .logo-shine::after {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
-      animation: shine 3s ease-in-out infinite;
-    }
-    @keyframes shine {
-      0% { transform: translateX(-100%) rotate(45deg); }
-      100% { transform: translateX(100%) rotate(45deg); }
-    }
-
-    /* Steps connector line */
-    .step-line {
-      position: absolute;
-      top: 24px; left: calc(50% + 24px);
-      width: calc(100% - 48px);
-      height: 2px;
-      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-      opacity: 0.3;
-    }
-
-    /* Scroll indicator */
-    .scroll-indicator {
-      animation: scrollBounce 2s ease-in-out infinite;
-    }
-    @keyframes scrollBounce {
-      0%,100% { transform: translateY(0); opacity: 1; }
-      50% { transform: translateY(8px); opacity: 0.5; }
-    }
-
-    .relative { position: relative; }
-    .z-10 { z-index: 10; }
   </style>
 </head>
-<body class="text-white">
+<body class="antialiased min-h-screen bg-[#f5f5f7] dark:bg-black text-[#1d1d1f] dark:text-white">
 
-  <!-- Background Orbs -->
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-
-  <!-- Navbar -->
-  <nav id="navbar" class="glass px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+  <!-- Header / Navigation -->
+  <nav id="navbar" class="px-8 py-6 flex justify-between items-center fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-500">
     <div class="flex items-center gap-3">
-      <div class="logo-shine w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg shadow-lg shadow-blue-500/30">Q</div>
+      <div class="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center font-bold text-sm text-white dark:text-black">Q</div>
       <div>
-        <h1 class="font-bold text-white leading-tight">SmartQueue</h1>
-        <p class="text-xs text-blue-300">GH Raisoni College, Jalgaon</p>
+        <h1 class="font-semibold text-black dark:text-white leading-tight text-sm tracking-tight">SmartQueue</h1>
+        <p class="text-[9px] text-zinc-500 font-semibold tracking-widest uppercase">GH Raisoni</p>
       </div>
     </div>
-    <div class="flex gap-3">
-      <a href="student-login.html"
-        class="px-4 py-2 rounded-xl text-sm font-semibold text-blue-300 hover:text-white hover:bg-white/10 transition">
-        Student
+    <div class="flex items-center gap-6">
+      <a href="student-login.html" class="text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white text-xs font-semibold transition duration-300">
+        Student Portal
       </a>
-      <a href="staff-login.html"
-        class="glow-btn px-4 py-2 bg-blue-600 rounded-xl text-sm font-semibold">
-        Staff Login
+      <a href="staff-login.html" class="px-5 py-2 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-xs font-semibold text-black dark:text-white transition duration-300">
+        Staff Portal
       </a>
+      
+      <!-- Theme Toggle Button -->
+      <button id="theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition duration-300">
+        <!-- Icon injected by theme.js -->
+      </button>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <div class="relative z-10 text-center py-24 px-4">
-    <div class="badge-float inline-flex items-center gap-2 glass border border-blue-500/30 rounded-full px-4 py-2 text-blue-300 text-sm mb-8">
-      <span class="pulse-dot w-2 h-2 bg-green-400 rounded-full inline-block"></span>
-      System is Live — Real-time Queue Management
-    </div>
+  <div class="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-36">
+    <video autoplay loop muted playsinline class="hero-video hidden dark:block">
+      <source src="herosection.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
 
-    <h2 class="text-6xl font-extrabold mb-6 leading-tight">
-      Skip the Line.<br/>
-      <span class="stat-num">Join Virtually.</span>
-    </h2>
-
-    <p class="text-slate-400 text-xl max-w-lg mx-auto mb-12 leading-relaxed">
-      No more standing in queues. Get a virtual token, track your position in real-time, and show up only when it's your turn.
-    </p>
-
-    <div class="flex justify-center gap-4 flex-wrap mb-16">
-      <a href="student_register.html"
-        class="glow-btn px-6 py-4 bg-blue-600 rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/30">
-        Get Started →
-      </a>
-      <a href="student-login.html"
-        class="glow-btn glass px-8 py-4 rounded-2xl font-bold text-lg hover:bg-white/10">
-        Login
-      </a>
-    </div>
-
-    <!-- Stats Row -->
-    <div class="flex justify-center gap-12 flex-wrap">
-      <div class="text-center">
-        <p class="text-4xl font-extrabold stat-num">3</p>
-        <p class="text-slate-400 text-sm mt-1">Departments</p>
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-black/[0.02] dark:bg-white/[0.04] backdrop-blur-md border border-black/[0.05] dark:border-white/[0.05] rounded-full text-zinc-600 dark:text-zinc-300 text-xs font-medium tracking-wide mb-10">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] dark:bg-[#2997ff] inline-block animate-pulse"></span>
+        System is Live — Real-time Queue Sync Active
       </div>
-      <div class="w-px bg-white/10 hidden md:block"></div>
-      <div class="text-center">
-        <p class="text-4xl font-extrabold stat-num">∞</p>
-        <p class="text-slate-400 text-sm mt-1">Real-time Updates</p>
-      </div>
-      <div class="w-px bg-white/10 hidden md:block"></div>
-      <div class="text-center">
-        <p class="text-4xl font-extrabold stat-num">AI</p>
-        <p class="text-slate-400 text-sm mt-1">Wait Prediction</p>
+
+      <h2 class="text-6xl sm:text-7xl md:text-8xl font-semibold tracking-tighter text-black dark:text-white mb-8 leading-[1.05]">
+        The Virtual Queue.<br/>
+        <span class="text-zinc-400 dark:text-zinc-500">Redefined.</span>
+      </h2>
+
+      <p class="text-zinc-500 dark:text-zinc-400 text-lg md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed tracking-tight">
+        Claim your virtual token, track your position in real-time, and get served without ever waiting in a physical line.
+      </p>
+
+      <div class="flex justify-center items-center gap-8 flex-wrap">
+        <a href="student_register.html"
+          class="btn-glow px-10 py-5 bg-[#0071e3] text-white rounded-full font-semibold text-base">
+          Get Started
+        </a>
+        <a href="student-login.html"
+          class="inline-flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white text-base font-semibold transition duration-500 ease-in-out group">
+          Sign In
+          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
       </div>
     </div>
+  </div>
 
-    <!-- Scroll indicator -->
-    <div class="scroll-indicator mt-16 flex flex-col items-center gap-2 text-slate-500 text-xs">
-      <span>Scroll to explore</span>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-      </svg>
+  <!-- Stats Bento Box Section -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto px-6 mb-36">
+    <div class="bg-white dark:bg-[#09090b] rounded-[32px] p-12 flex flex-col justify-between h-56 transition-all duration-500 hover:bg-[#fafafa] dark:hover:bg-[#0d0d0f] border border-black/[0.03] dark:border-white/[0.01] hover:border-black/[0.06] dark:hover:border-white/[0.04] shadow-sm dark:shadow-none">
+      <span class="text-zinc-400 dark:text-zinc-500 text-xs font-semibold uppercase tracking-wider">Service Scope</span>
+      <span class="text-6xl font-light tracking-tighter text-black dark:text-white">3</span>
+      <span class="text-zinc-500 dark:text-zinc-500 text-xs">Active college departments.</span>
+    </div>
+    <div class="bg-white dark:bg-[#09090b] rounded-[32px] p-12 flex flex-col justify-between h-56 transition-all duration-500 hover:bg-[#fafafa] dark:hover:bg-[#0d0d0f] border border-black/[0.03] dark:border-white/[0.01] hover:border-black/[0.06] dark:hover:border-white/[0.04] shadow-sm dark:shadow-none">
+      <span class="text-zinc-400 dark:text-zinc-500 text-xs font-semibold uppercase tracking-wider">Sync State</span>
+      <span class="text-6xl font-light tracking-tighter text-black dark:text-white">Live</span>
+      <span class="text-zinc-500 dark:text-zinc-500 text-xs">Real-time bi-directional database sync.</span>
+    </div>
+    <div class="bg-white dark:bg-[#09090b] rounded-[32px] p-12 flex flex-col justify-between h-56 transition-all duration-500 hover:bg-[#fafafa] dark:hover:bg-[#0d0d0f] border border-black/[0.03] dark:border-white/[0.01] hover:border-black/[0.06] dark:hover:border-white/[0.04] shadow-sm dark:shadow-none">
+      <span class="text-zinc-400 dark:text-zinc-500 text-xs font-semibold uppercase tracking-wider">Intelligence</span>
+      <span class="text-6xl font-light tracking-tighter text-black dark:text-white">AI</span>
+      <span class="text-zinc-500 dark:text-zinc-500 text-xs">Predictive wait time estimation.</span>
     </div>
   </div>
 
   <!-- Live Counters -->
-  <div class="relative z-10 max-w-4xl mx-auto px-4 mb-20">
-    <div class="text-center mb-10">
-      <div class="inline-flex items-center gap-2 mb-3">
-        <span class="pulse-dot w-3 h-3 bg-green-400 rounded-full inline-block"></span>
-        <span class="text-green-400 text-sm font-semibold uppercase tracking-widest">Live</span>
-      </div>
-      <h3 class="text-3xl font-bold section-title">Queue Status</h3>
+  <div class="max-w-5xl mx-auto px-6 mb-36">
+    <div class="mb-16 text-center">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.02] dark:bg-white/[0.03] text-[10px] font-semibold text-[#0071e3] dark:text-[#2997ff] uppercase tracking-widest border border-black/[0.03] dark:border-white/[0.02] mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] dark:bg-[#2997ff] inline-block animate-ping"></span> Live Status
+      </span>
+      <h3 class="text-4xl md:text-5xl font-semibold tracking-tight text-black dark:text-white">Current Counters</h3>
     </div>
 
-    <div id="live-counters" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Skeleton -->
-      <div class="glass rounded-2xl p-6 animate-pulse">
-        <div class="h-4 bg-white/10 rounded mb-3 w-3/4"></div>
-        <div class="h-8 bg-white/10 rounded w-1/2"></div>
+    <div id="live-counters" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Skeleton template -->
+      <div class="bg-white dark:bg-[#09090b] rounded-[32px] p-12 h-64 animate-pulse border border-black/[0.03] dark:border-white/[0.02]"></div>
+      <div class="bg-white dark:bg-[#09090b] rounded-[32px] p-12 h-64 animate-pulse border border-black/[0.03] dark:border-white/[0.02]"></div>
+      <div class="bg-white dark:bg-[#09090b] rounded-[32px] p-12 h-64 animate-pulse border border-black/[0.03] dark:border-white/[0.02]"></div>
+    </div>
+  </div>
+
+  <!-- How It Works (Bento Box Grid) -->
+  <div class="max-w-5xl mx-auto px-6 mb-36">
+    <div class="mb-20 text-center">
+      <h3 class="text-4xl md:text-5xl font-semibold tracking-tight text-black dark:text-white mb-4">How It Works</h3>
+      <p class="text-zinc-500 text-lg max-w-md mx-auto">Four deliberate steps to save hours of standing in line.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-8">
+      <!-- Step 1 -->
+      <div class="md:col-span-3 bg-white dark:bg-[#09090b] rounded-[32px] p-12 border border-black/[0.03] dark:border-white/[0.01] hover:border-black/[0.06] dark:hover:border-white/[0.04] hover:bg-[#fafafa] dark:hover:bg-[#0d0d0f] transition duration-500 flex flex-col justify-between min-h-[280px] shadow-sm dark:shadow-none">
+        <div class="w-10 h-10 bg-black/[0.02] dark:bg-white/[0.04] rounded-xl flex items-center justify-center text-lg mb-8">🔐</div>
+        <div>
+          <span class="text-[#0071e3] dark:text-[#2997ff] text-xs font-semibold uppercase tracking-wider mb-2 block">Step 01</span>
+          <h4 class="text-lg font-medium text-black dark:text-white mb-3">Instant Registry</h4>
+          <p class="text-zinc-500 text-sm leading-relaxed">Securely log in using your authenticated student profile.</p>
+        </div>
       </div>
-      <div class="glass rounded-2xl p-6 animate-pulse">
-        <div class="h-4 bg-white/10 rounded mb-3 w-3/4"></div>
-        <div class="h-8 bg-white/10 rounded w-1/2"></div>
+
+      <!-- Step 2 -->
+      <div class="md:col-span-3 bg-white dark:bg-[#09090b] rounded-[32px] p-12 border border-black/[0.03] dark:border-white/[0.01] hover:border-black/[0.06] dark:hover:border-white/[0.04] hover:bg-[#fafafa] dark:hover:bg-[#0d0d0f] transition duration-500 flex flex-col justify-between min-h-[280px] shadow-sm dark:shadow-none">
+        <div class="w-10 h-10 bg-black/[0.02] dark:bg-white/[0.04] rounded-xl flex items-center justify-center text-lg mb-8">🎫</div>
+        <div>
+          <span class="text-[#0071e3] dark:text-[#2997ff] text-xs font-semibold uppercase tracking-wider mb-2 block">Step 02</span>
+          <h4 class="text-lg font-medium text-black dark:text-white mb-3">Claim Virtual Token</h4>
+          <p class="text-zinc-500 text-sm leading-relaxed">Select your target department and claim your sequential queue token instantly.</p>
+        </div>
       </div>
-      <div class="glass rounded-2xl p-6 animate-pulse">
-        <div class="h-4 bg-white/10 rounded mb-3 w-3/4"></div>
-        <div class="h-8 bg-white/10 rounded w-1/2"></div>
+
+      <!-- Step 3 -->
+      <div class="md:col-span-3 bg-white dark:bg-[#09090b] rounded-[32px] p-12 border border-black/[0.03] dark:border-white/[0.01] hover:border-black/[0.06] dark:hover:border-white/[0.04] hover:bg-[#fafafa] dark:hover:bg-[#0d0d0f] transition duration-500 flex flex-col justify-between min-h-[280px] shadow-sm dark:shadow-none">
+        <div class="w-10 h-10 bg-black/[0.02] dark:bg-white/[0.04] rounded-xl flex items-center justify-center text-lg mb-8">📍</div>
+        <div>
+          <span class="text-[#0071e3] dark:text-[#2997ff] text-xs font-semibold uppercase tracking-wider mb-2 block">Step 03</span>
+          <h4 class="text-lg font-medium text-black dark:text-white mb-3">Wait Anywhere</h4>
+          <p class="text-zinc-500 text-sm leading-relaxed">Track queue position changes dynamically without needing to stay in the building.</p>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="md:col-span-3 bg-white dark:bg-[#09090b] rounded-[32px] p-12 border border-black/[0.03] dark:border-white/[0.01] hover:border-black/[0.06] dark:hover:border-white/[0.04] hover:bg-[#fafafa] dark:hover:bg-[#0d0d0f] transition duration-500 flex flex-col justify-between min-h-[280px] shadow-sm dark:shadow-none">
+        <div class="w-10 h-10 bg-black/[0.02] dark:bg-white/[0.04] rounded-xl flex items-center justify-center text-lg mb-8">✅</div>
+        <div>
+          <span class="text-[#0071e3] dark:text-[#2997ff] text-xs font-semibold uppercase tracking-wider mb-2 block">Step 04</span>
+          <h4 class="text-lg font-medium text-black dark:text-white mb-3">Seamless Service</h4>
+          <p class="text-zinc-500 text-sm leading-relaxed">Head directly to the service counter when your token is called.</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- How it Works -->
-  <div class="relative z-10 max-w-4xl mx-auto px-4 mb-24">
-    <div class="text-center mb-12">
-      <h3 class="text-3xl font-bold section-title">How It Works</h3>
-      <p class="text-slate-400 mt-2">Four simple steps to skip the queue</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="tilt-card glass rounded-2xl p-6 text-center">
-        <div class="w-12 h-12 bg-blue-600/30 border border-blue-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">🔐</div>
-        <div class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">Step 1</div>
-        <h4 class="font-bold text-white mb-2">Login</h4>
-        <p class="text-slate-400 text-sm">Login with your student account.</p>
-      </div>
-      <div class="tilt-card glass rounded-2xl p-6 text-center">
-        <div class="w-12 h-12 bg-purple-600/30 border border-purple-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">🎫</div>
-        <div class="text-purple-400 text-xs font-bold uppercase tracking-widest mb-2">Step 2</div>
-        <h4 class="font-bold text-white mb-2">Get Token</h4>
-        <p class="text-slate-400 text-sm">Receive your virtual token instantly.</p>
-      </div>
-      <div class="tilt-card glass rounded-2xl p-6 text-center">
-        <div class="w-12 h-12 bg-cyan-600/30 border border-cyan-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">📍</div>
-        <div class="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-2">Step 3</div>
-        <h4 class="font-bold text-white mb-2">Wait Anywhere</h4>
-        <p class="text-slate-400 text-sm">Monitor your position in real-time.</p>
-      </div>
-      <div class="tilt-card glass rounded-2xl p-6 text-center">
-        <div class="w-12 h-12 bg-green-600/30 border border-green-500/30 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">✅</div>
-        <div class="text-green-400 text-xs font-bold uppercase tracking-widest mb-2">Step 4</div>
-        <h4 class="font-bold text-white mb-2">Get Served</h4>
-        <p class="text-slate-400 text-sm">Go to the counter when called.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="relative z-10 max-w-2xl mx-auto px-4 mb-24 text-center">
-    <div class="animated-border glass rounded-3xl p-10">
-      <h3 class="text-3xl font-bold mb-3">Ready to Skip the Queue?</h3>
-      <p class="text-slate-400 mb-8">Join thousands of students who no longer wait in lines.</p>
-      <a href="student_register.html"
-        class="glow-btn inline-block px-10 py-4 bg-blue-600 rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/30">
-        Create Free Account →
+  <!-- Call to Action -->
+  <div class="max-w-5xl mx-auto px-6 mb-36">
+    <div class="bg-white dark:bg-[#09090b] rounded-[40px] p-16 md:p-24 border border-black/[0.03] dark:border-white/[0.01] text-center relative overflow-hidden shadow-sm dark:shadow-none">
+      <div class="absolute inset-0 bg-gradient-to-b from-[#0071e3]/[0.01] dark:from-[#2997ff]/[0.02] to-transparent pointer-events-none"></div>
+      
+      <h3 class="text-4xl md:text-6xl font-semibold tracking-tight text-black dark:text-white mb-6 leading-tight">Ready to Skip the Line?</h3>
+      <p class="text-zinc-500 text-base md:text-lg max-w-lg mx-auto mb-12">
+        Join the smart student registry. Eliminate physical queue times.
+      </p>
+      
+      <a href="student_register.html" class="btn-glow inline-block px-10 py-5 bg-[#0071e3] text-white rounded-full font-semibold text-base">
+        Create Your Account
       </a>
     </div>
   </div>
 
   <!-- Footer -->
-  <footer class="relative z-10 border-t border-white/10 mt-10">
-  <div class="max-w-4xl mx-auto px-6 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
-
-      <!-- Brand -->
-      <div>
-        <div class="flex items-center gap-3 mb-4">
-          <div class="logo-shine w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm">Q</div>
-          <div>
-            <p class="font-bold text-white">SmartQueue</p>
-            <p class="text-xs text-blue-300">Virtual Queue System</p>
+  <footer class="border-t border-black/[0.05] dark:border-white/[0.05] bg-[#f5f5f7] dark:bg-[#000000] relative z-10">
+    <div class="max-w-5xl mx-auto px-6 py-20">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center font-bold text-sm text-white dark:text-black">Q</div>
+            <span class="font-bold text-black dark:text-white text-base tracking-tight">SmartQueue</span>
           </div>
+          <p class="text-zinc-500 text-sm leading-relaxed max-w-xs">
+            A premium queue management utility designed for GH Raisoni College, Jalgaon.
+          </p>
         </div>
-        <p class="text-slate-400 text-sm leading-relaxed">
-          A smart virtual queue management system built for GH Raisoni College of Engineering and Management, Jalgaon.
-        </p>
-      </div>
+        
+        <div>
+          <h4 class="text-black dark:text-white text-xs font-semibold uppercase tracking-wider mb-6">Navigation</h4>
+          <ul class="space-y-3">
+            <li><a href="index.html" class="text-zinc-500 hover:text-black dark:hover:text-white text-sm transition duration-300">Home</a></li>
+            <li><a href="student_register.html" class="text-zinc-500 hover:text-black dark:hover:text-white text-sm transition duration-300">Create Account</a></li>
+            <li><a href="student-login.html" class="text-zinc-500 hover:text-black dark:hover:text-white text-sm transition duration-300">Student Portal</a></li>
+            <li><a href="staff-login.html" class="text-zinc-500 hover:text-black dark:hover:text-white text-sm transition duration-300">Staff Portal</a></li>
+          </ul>
+        </div>
 
-      <!-- Quick Links -->
-      <div>
-        <h4 class="text-white font-bold mb-4 uppercase tracking-widest text-xs">Quick Links</h4>
-        <ul class="space-y-2">
-          <li><a href="index.html" class="text-slate-400 hover:text-white text-sm transition">🏠 Home</a></li>
-          <li><a href="student_register.html" class="text-slate-400 hover:text-white text-sm transition">📝 Register</a></li>
-          <li><a href="student-login.html" class="text-slate-400 hover:text-white text-sm transition">🎓 Student Login</a></li>
-          <li><a href="staff-login.html" class="text-slate-400 hover:text-white text-sm transition">⚙️ Staff Login</a></li>
-        </ul>
+        <div>
+          <h4 class="text-black dark:text-white text-xs font-semibold uppercase tracking-wider mb-6">Institution</h4>
+          <ul class="space-y-3">
+            <li><a href="https://ghrcemj.raisoni.net/" target="_blank" class="text-zinc-500 hover:text-black dark:hover:text-white text-sm transition duration-300">Official Portal</a></li>
+            <li><a href="mailto:info@raisoni.net" class="text-zinc-500 hover:text-black dark:hover:text-white text-sm transition duration-300">Institutional Mail</a></li>
+            <li><a href="tel:+9102572264881" class="text-zinc-500 hover:text-black dark:hover:text-white text-sm transition duration-300">Support Contact</a></li>
+          </ul>
+        </div>
       </div>
-
-      <!-- Contact & Social -->
-      <div>
-        <h4 class="text-white font-bold mb-4 uppercase tracking-widest text-xs">Connect</h4>
-        <ul class="space-y-2">
-          <li>
-            <a href="https://ghrcemj.raisoni.net/" target="_blank"
-              class="text-slate-400 hover:text-white text-sm transition flex items-center gap-2">
-              🌐 Official Website
-            </a>
-          </li>
-          <li>
-            <a href="https://www.instagram.com/ghrce_jalgaon" target="_blank"
-              class="text-slate-400 hover:text-pink-400 text-sm transition flex items-center gap-2">
-              📸 Instagram
-            </a>
-          </li>
-          <li>
-            <a href="mailto:info@raisoni.net"
-              class="text-slate-400 hover:text-blue-400 text-sm transition flex items-center gap-2">
-              📧 info@raisoni.net
-            </a>
-          </li>
-          <li>
-            <a href="tel:+91-0257-2264881"
-              class="text-slate-400 hover:text-green-400 text-sm transition flex items-center gap-2">
-              📞 +91-0257-2264881
-            </a>
-          </li>
-        </ul>
+      
+      <div class="border-t border-black/[0.05] dark:border-white/[0.05] pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-500 dark:text-zinc-600">
+        <p>© 2026 SmartQueue — GH Raisoni College of Engineering and Management, Jalgaon.</p>
+        <p>Built by BCA Department</p>
       </div>
     </div>
-
-    <!-- Bottom bar -->
-    <div class="border-t border-white/5 pt-6 flex flex-col md:flex-row justify-between items-center gap-3">
-      <p class="text-slate-500 text-xs">© 2026 SmartQueue — GH Raisoni College of Engineering and Management, Jalgaon</p>
-      <p class="text-slate-600 text-xs">Built with ❤️ by BCA Department</p>
-    </div>
-  </div>
-</footer>
+  </footer>
 
   <script type="module">
     import { db } from './firebase-config.js';
@@ -413,42 +298,43 @@
     // Navbar scroll effect
     window.addEventListener('scroll', () => {
       const nav = document.getElementById('navbar');
-      if (window.scrollY > 50) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
+      if (window.scrollY > 50) {
+        nav.classList.add('bg-white/80', 'dark:bg-black/80', 'backdrop-blur-md', 'border-b', 'border-black/[0.05]', 'dark:border-white/[0.05]');
+      } else {
+        nav.classList.remove('bg-white/80', 'dark:bg-black/80', 'backdrop-blur-md', 'border-b', 'border-black/[0.05]', 'dark:border-white/[0.05]');
+      }
     });
 
-    // Live counters
+    // Live counters sync
     const liveCounters = document.getElementById('live-counters');
     onSnapshot(collection(db, 'queues'), (snapshot) => {
       liveCounters.innerHTML = '';
       snapshot.forEach((queueDoc) => {
         const q = queueDoc.data();
         const waiting = Math.max(0, q.lastToken - q.currentCounter);
-        const isLow = waiting === 0;
-        const isMed = waiting > 0 && waiting <= 3;
-        const dotColor = isLow ? 'bg-green-400' : isMed ? 'bg-yellow-400' : 'bg-red-400';
-        const waitColor = isLow ? 'text-green-400' : isMed ? 'text-yellow-400' : 'text-red-400';
-        const waitText = isLow ? 'No wait!' : `${waiting} waiting`;
+        const waitText = waiting === 0 ? 'No wait time' : `${waiting} waiting`;
         const icons = { fees_counter: '💰', admissions: '📋', scholarship: '🎓' };
         const icon = icons[queueDoc.id] || '🏢';
 
         const card = document.createElement('div');
-        card.className = 'tilt-card glass rounded-2xl p-6 counter-animate';
+        card.className = 'group bg-white dark:bg-[#09090b] rounded-[32px] p-10 border border-black/[0.03] dark:border-white/[0.01] hover:border-black/[0.06] dark:hover:border-white/[0.04] hover:bg-[#fafafa] dark:hover:bg-[#0d0d0f] transition duration-500 flex flex-col justify-between h-64 shadow-sm dark:shadow-none';
         card.innerHTML = `
-          <div class="flex justify-between items-start mb-4">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">${icon}</span>
-              <h4 class="font-bold text-white">${q.deptName}</h4>
+          <div>
+            <div class="flex justify-between items-start mb-6">
+              <div class="w-10 h-10 bg-black/[0.02] dark:bg-white/[0.04] rounded-xl flex items-center justify-center text-lg">
+                ${icon}
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.02] dark:bg-white/[0.03] text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest border border-black/[0.03] dark:border-white/[0.02]">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] dark:bg-[#2997ff] inline-block animate-pulse"></span> Live
+              </span>
             </div>
-            <span class="flex items-center gap-1 text-xs text-slate-400">
-              <span class="w-2 h-2 rounded-full ${dotColor} inline-block pulse-dot"></span> Live
-            </span>
+            <h4 class="text-sm font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1">${q.deptName}</h4>
+            <p class="text-5xl font-light tracking-tighter text-black dark:text-white">${waiting}</p>
+            <p class="text-[#0071e3] dark:text-[#2997ff] text-xs mt-1 font-medium">${waitText}</p>
           </div>
-          <p class="text-5xl font-extrabold ${waitColor} mb-2">${waiting}</p>
-          <p class="text-slate-400 text-sm mb-3">${waitText}</p>
-          <div class="border-t border-white/5 pt-3 flex justify-between items-center">
-            <p class="text-slate-500 text-xs">Now serving</p>
-            <p class="text-white font-bold">#${q.currentCounter}</p>
+          <div class="border-t border-black/[0.04] dark:border-white/[0.04] pt-4 flex justify-between items-center mt-6">
+            <span class="text-zinc-400 dark:text-zinc-500 text-xs uppercase tracking-wider font-semibold">Serving Now</span>
+            <span class="text-black dark:text-white font-medium text-sm">#${q.currentCounter}</span>
           </div>`;
         liveCounters.appendChild(card);
       });

@@ -148,7 +148,7 @@
     import { auth, db } from './firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import {
-      doc, getDoc, getDocs, collection, query, where
+      doc, getDoc, getDocs, collection, query, where, orderBy
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     onAuthStateChanged(auth, async (user) => {
@@ -183,12 +183,27 @@
         const queueId = qDoc.id;
         const icon    = icons[queueId] || '🏢';
 
-        // Get all tokens
-        const allTokens    = await getDocs(collection(db, 'queues', queueId, 'tokens'));
-        const waitingTokens = await getDocs(query(collection(db, 'queues', queueId, 'tokens'), where('status', '==', 'waiting')));
-        const servedTokens  = await getDocs(query(collection(db, 'queues', queueId, 'tokens'), where('status', '==', 'complete')));
+        // Today's start timestamp
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
 
-        const issued  = q.lastToken ?? 0;
+        // Get today's tokens only
+        const waitingTokens = await getDocs(query(
+          collection(db, 'queues', queueId, 'tokens'),
+          where('status', '==', 'waiting'),
+          where('timestamp', '>=', todayStart)
+        ));
+        const servedTokens = await getDocs(query(
+          collection(db, 'queues', queueId, 'tokens'),
+          where('status', '==', 'complete'),
+          where('timestamp', '>=', todayStart)
+        ));
+        const allTodayTokens = await getDocs(query(
+          collection(db, 'queues', queueId, 'tokens'),
+          where('timestamp', '>=', todayStart)
+        ));
+
+        const issued  = allTodayTokens.size;
         const waiting = waitingTokens.size;
         const served  = servedTokens.size;
 

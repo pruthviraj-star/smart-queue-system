@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login | SmartQueue</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <script src="theme.js"></script>
+</head>
+<body>
+
+  <nav class="sq-nav">
+    <a href="index.html" class="sq-logo">
+      <div class="sq-logo-mark">👑</div>
+      <div>
+        <div class="sq-logo-name">Admin Portal</div>
+        <div class="sq-logo-sub">SmartQueue Analytics</div>
+      </div>
+    </a>
+    <div class="sq-nav-actions">
+      <a href="staff-login.html" class="sq-btn sq-btn-ghost sq-btn-sm">Staff Login</a>
+      <button id="theme-toggle" onclick="toggleTheme()" class="sq-btn sq-btn-ghost sq-btn-sm" style="width:36px;padding:7px;"></button>
+    </div>
+  </nav>
+
+  <div class="sq-auth-wrap">
+    <div class="sq-auth-card">
+      <div class="sq-card sq-fade-in" style="padding:40px;">
+        <div style="margin-bottom:32px;">
+          <h1 style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:6px;">Admin Login</h1>
+          <p style="font-size:14px;color:var(--text-sub);">Access analytics and system overview</p>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <label class="sq-label">Admin Email</label>
+          <input id="email" type="email" placeholder="admin@smartqueue.com" class="sq-input"/>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label class="sq-label">Password</label>
+          <input id="password" type="password" placeholder="••••••••" class="sq-input"/>
+        </div>
+
+        <div id="error-msg" class="sq-alert sq-alert-error" style="margin-bottom:16px;"></div>
+
+        <button onclick="loginAdmin()" id="login-btn" class="sq-btn sq-btn-primary sq-btn-full sq-btn-lg">
+          Login as Admin
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './firebase-config.js';
+    import { signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    window.loginAdmin = async function() {
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const errorEl  = document.getElementById('error-msg');
+      const btn      = document.getElementById('login-btn');
+
+      errorEl.classList.remove('show');
+      btn.textContent = 'Logging in…';
+      btn.disabled = true;
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const userDoc = await getDoc(doc(db, 'users', cred.user.uid));
+        if (userDoc.exists() && userDoc.data().role === 'admin') {
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          errorEl.textContent = 'Access denied — not an admin account.';
+          errorEl.classList.add('show');
+          await signOut(auth);
+          btn.textContent = 'Login as Admin';
+          btn.disabled = false;
+        }
+      } catch {
+        errorEl.textContent = 'Invalid email or password.';
+        errorEl.classList.add('show');
+        btn.textContent = 'Login as Admin';
+        btn.disabled = false;
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('password').addEventListener('keydown', e => {
+        if (e.key === 'Enter') loginAdmin();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard | SmartQueue</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <script src="theme.js"></script>
+  <style>
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 600px) {
+      .admin-grid { grid-template-columns: 1fr; }
+    }
+
+    .dept-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0; border-bottom: 1px solid var(--border-s);
+    }
+    .dept-row:last-child { border-bottom: none; }
+
+    /* Bar chart */
+    .bar-wrap {
+      display: flex; flex-direction: column; gap: 10px; margin-top: 4px;
+    }
+    .bar-item { display: flex; align-items: center; gap: 10px; }
+    .bar-label { font-size: 11px; color: var(--text-sub); width: 36px; flex-shrink: 0; text-align: right; }
+    .bar-track {
+      flex: 1; height: 8px; border-radius: 999px;
+      background: var(--border-s); overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%; border-radius: 999px;
+      background: var(--accent);
+      transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .bar-val { font-size: 11px; color: var(--text-dim); width: 28px; flex-shrink: 0; }
+
+    /* Status dot */
+    .status-open   { background: #34c759; }
+    .status-closed { background: #ff3b30; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+    /* Refresh button */
+    .sq-refresh {
+      font-size: 11px; color: var(--text-dim); cursor: pointer;
+      background: none; border: none; padding: 0;
+      transition: color 0.2s;
+    }
+    .sq-refresh:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <nav class="sq-nav">
+    <a href="index.html" class="sq-logo">
+      <div class="sq-logo-mark">👑</div>
+      <div>
+        <div class="sq-logo-name">Admin Panel</div>
+        <div class="sq-logo-sub">SmartQueue Analytics</div>
+      </div>
+    </a>
+    <div class="sq-nav-actions">
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;border:1px solid var(--border-s);background:var(--bg-card);">
+        <span class="sq-live-dot"></span>
+        <span id="admin-name" style="font-size:12px;color:var(--text-sub);font-weight:500;"></span>
+      </div>
+      <button onclick="logout()" class="sq-btn sq-btn-ghost sq-btn-sm">Logout</button>
+    </div>
+  </nav>
+
+  <div style="max-width:700px;margin:0 auto;padding:40px 20px;">
+
+    <!-- Header -->
+    <div class="sq-fade-in" style="margin-bottom:32px;">
+      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:8px;">Admin Dashboard</p>
+      <h2 style="font-size:28px;font-weight:700;color:var(--text);">System Analytics</h2>
+      <p style="font-size:13px;color:var(--text-sub);margin-top:4px;" id="last-updated">Loading...</p>
+    </div>
+
+    <!-- Top stats -->
+    <div class="admin-grid sq-fade-in" style="margin-bottom:14px;">
+      <div class="sq-card" style="text-align:center;">
+        <div class="sq-stat-label">Total Tokens Today</div>
+        <div id="total-tokens" class="sq-stat-value" style="font-size:40px;margin:8px 0;">—</div>
+        <div style="font-size:11px;color:var(--text-dim);">Across all departments</div>
+      </div>
+      <div class="sq-card" style="text-align:center;">
+        <div class="sq-stat-label">Students Served</div>
+        <div id="total-served" class="sq-stat-value" style="font-size:40px;margin:8px 0;">—</div>
+        <div style="font-size:11px;color:var(--text-dim);">Completed tokens</div>
+      </div>
+      <div class="sq-card" style="text-align:center;">
+        <div class="sq-stat-label">Currently Waiting</div>
+        <div id="total-waiting" class="sq-stat-value" style="font-size:40px;margin:8px 0;">—</div>
+        <div style="font-size:11px;color:var(--text-dim);">Across all queues</div>
+      </div>
+      <div class="sq-card" style="text-align:center;">
+        <div class="sq-stat-label">Avg. Service Time</div>
+        <div id="avg-service" class="sq-stat-value" style="font-size:40px;margin:8px 0;">—</div>
+        <div style="font-size:11px;color:var(--text-dim);">Per student (mins)</div>
+      </div>
+    </div>
+
+    <!-- Department breakdown -->
+    <div class="sq-card sq-fade-in" style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <h3 style="font-size:15px;font-weight:600;color:var(--text);">Department Overview</h3>
+        <button class="sq-refresh" onclick="loadAnalytics()">↻ Refresh</button>
+      </div>
+      <div id="dept-breakdown">
+        <p style="color:var(--text-dim);font-size:13px;text-align:center;padding:16px 0;">Loading...</p>
+      </div>
+    </div>
+
+    <!-- Tokens per department bar chart -->
+    <div class="sq-card sq-fade-in" style="margin-bottom:14px;">
+      <h3 style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Tokens Issued — Today</h3>
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:20px;">Comparison across departments</p>
+      <div id="tokens-chart" class="bar-wrap">
+        <p style="color:var(--text-dim);font-size:13px;text-align:center;padding:16px 0;">Loading...</p>
+      </div>
+    </div>
+
+    <!-- Avg service time per dept -->
+    <div class="sq-card sq-fade-in" style="margin-bottom:14px;">
+      <h3 style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Avg. Service Time</h3>
+      <p style="font-size:11px;color:var(--text-dim);margin-bottom:20px;">Per department (minutes)</p>
+      <div id="service-chart" class="bar-wrap">
+        <p style="color:var(--text-dim);font-size:13px;text-align:center;padding:16px 0;">Loading...</p>
+      </div>
+    </div>
+
+    <!-- Queue status -->
+    <div class="sq-card sq-fade-in">
+      <h3 style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:20px;">Queue Status</h3>
+      <div id="queue-status-list">
+        <p style="color:var(--text-dim);font-size:13px;text-align:center;padding:16px 0;">Loading...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { auth, db } from './firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      doc, getDoc, getDocs, collection, query, where
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'admin-login.html'; return; }
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists() || userDoc.data().role !== 'admin') {
+        alert('Access denied.');
+        await signOut(auth);
+        window.location.href = 'admin-login.html';
+        return;
+      }
+      document.getElementById('admin-name').textContent = userDoc.data().name;
+      loadAnalytics();
+    });
+
+    window.loadAnalytics = async function() {
+      document.getElementById('last-updated').textContent = 'Refreshing...';
+
+      const queuesSnap = await getDocs(collection(db, 'queues'));
+      const icons = { fees_counter: '💰', admissions: '📋', scholarship: '🎓' };
+
+      let totalTokens  = 0;
+      let totalServed  = 0;
+      let totalWaiting = 0;
+      let totalServiceDuration = 0;
+      let totalServiceCount    = 0;
+
+      const deptData = [];
+
+      for (const qDoc of queuesSnap.docs) {
+        const q       = qDoc.data();
+        const queueId = qDoc.id;
+        const icon    = icons[queueId] || '🏢';
+
+        // Get all tokens
+        const allTokens    = await getDocs(collection(db, 'queues', queueId, 'tokens'));
+        const waitingTokens = await getDocs(query(collection(db, 'queues', queueId, 'tokens'), where('status', '==', 'waiting')));
+        const servedTokens  = await getDocs(query(collection(db, 'queues', queueId, 'tokens'), where('status', '==', 'complete')));
+
+        const issued  = q.lastToken ?? 0;
+        const waiting = waitingTokens.size;
+        const served  = servedTokens.size;
+
+        // Avg service time for this dept
+        let deptAvg = 0, deptCount = 0;
+        servedTokens.forEach(t => {
+          const dur = t.data().serviceDuration;
+          if (dur && dur > 0 && dur < 3600) {
+            deptAvg += dur; deptCount++;
+            totalServiceDuration += dur; totalServiceCount++;
+          }
+        });
+        const avgMins = deptCount > 0 ? Math.round((deptAvg / deptCount) / 60) : 0;
+
+        totalTokens  += issued;
+        totalServed  += served;
+        totalWaiting += waiting;
+
+        deptData.push({
+          id: queueId,
+          name: q.deptName,
+          icon,
+          issued,
+          waiting,
+          served,
+          avgMins,
+          isActive: q.isActive !== false,
+          currentCounter: q.currentCounter ?? 0
+        });
+      }
+
+      // Update top stats
+      document.getElementById('total-tokens').textContent  = totalTokens;
+      document.getElementById('total-served').textContent  = totalServed;
+      document.getElementById('total-waiting').textContent = totalWaiting;
+      const globalAvg = totalServiceCount > 0
+        ? Math.round((totalServiceDuration / totalServiceCount) / 60)
+        : '—';
+      document.getElementById('avg-service').textContent = globalAvg + (globalAvg !== '—' ? 'm' : '');
+
+      // Department breakdown table
+      const breakdown = document.getElementById('dept-breakdown');
+      breakdown.innerHTML = deptData.map(d => `
+        <div class="dept-row">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">${d.icon}</span>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);">${d.name}</div>
+              <div style="font-size:11px;color:var(--text-dim);">Serving #${d.currentCounter}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;text-align:right;">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);">${d.issued}</div>
+              <div style="font-size:10px;color:var(--text-dim);">Issued</div>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#34c759;">${d.served}</div>
+              <div style="font-size:10px;color:var(--text-dim);">Served</div>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#ff9f0a;">${d.waiting}</div>
+              <div style="font-size:10px;color:var(--text-dim);">Waiting</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;">
+              <span class="status-dot ${d.isActive ? 'status-open' : 'status-closed'}"></span>
+              <span style="font-size:11px;color:var(--text-sub);">${d.isActive ? 'Open' : 'Closed'}</span>
+            </div>
+          </div>
+        </div>`).join('');
+
+      // Tokens issued bar chart
+      const maxIssued = Math.max(...deptData.map(d => d.issued), 1);
+      document.getElementById('tokens-chart').innerHTML = deptData.map(d => `
+        <div class="bar-item">
+          <span class="bar-label">${d.icon}</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${Math.round((d.issued / maxIssued) * 100)}%"></div>
+          </div>
+          <span class="bar-val">${d.issued}</span>
+        </div>
+        <div style="font-size:10px;color:var(--text-dim);margin-left:46px;margin-top:-6px;margin-bottom:4px;">${d.name}</div>
+      `).join('');
+
+      // Avg service time bar chart
+      const maxAvg = Math.max(...deptData.map(d => d.avgMins), 1);
+      document.getElementById('service-chart').innerHTML = deptData.map(d => `
+        <div class="bar-item">
+          <span class="bar-label">${d.icon}</span>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${d.avgMins > 0 ? Math.round((d.avgMins / maxAvg) * 100) : 0}%;background:#ff9f0a;"></div>
+          </div>
+          <span class="bar-val">${d.avgMins > 0 ? d.avgMins + 'm' : '—'}</span>
+        </div>
+        <div style="font-size:10px;color:var(--text-dim);margin-left:46px;margin-top:-6px;margin-bottom:4px;">${d.name}</div>
+      `).join('');
+
+      // Queue status list
+      document.getElementById('queue-status-list').innerHTML = deptData.map(d => `
+        <div class="dept-row">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="status-dot ${d.isActive ? 'status-open' : 'status-closed'}"></span>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);">${d.name}</div>
+              <div style="font-size:11px;color:var(--text-dim);">${d.isActive ? 'Accepting students' : 'Queue closed for today'}</div>
+            </div>
+          </div>
+          <span class="sq-badge ${d.isActive ? 'sq-badge-called' : 'sq-badge-done'}">${d.isActive ? 'Open' : 'Closed'}</span>
+        </div>`).join('');
+
+      // Update timestamp
+      const now = new Date();
+      document.getElementById('last-updated').textContent =
+        `Last updated: ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
+    };
+
+    window.logout = async function() {
+      await signOut(auth);
+      window.location.href = 'admin-login.html';
+    };
+  </script>
+
+</body>
+</html>

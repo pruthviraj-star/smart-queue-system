@@ -6,6 +6,8 @@
   <title>Your Token | SmartQueue</title>
   <link rel="stylesheet" href="shared.css"/>
   <script src="theme.js"></script>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#0071e3"/>
   <style>
     .token-section {
       text-align: center; padding: 40px 28px;
@@ -151,13 +153,35 @@
     }
 
     async function requestNotificationPermission() {
-      if ('Notification' in window) await Notification.requestPermission();
-    }
+  if (!('serviceWorker' in navigator)) return false;
+  
+  try {
+    const reg = await navigator.serviceWorker.register('/sw.js');
+    await navigator.serviceWorker.ready;
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  } catch(e) {
+    console.error('SW registration failed:', e);
+    return false;
+  }
+}
 
-    function notify(title, body) {
-      if (Notification?.permission === 'granted')
-        new Notification(title, { body, icon: '/favicon.ico' });
-    }
+    async function notify(title, body) {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification(title, {
+      body,
+      icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827392.png',
+      badge: 'https://cdn-icons-png.flaticon.com/512/1827/1827392.png',
+      vibrate: [200, 100, 200],
+      tag: 'smartqueue-update',
+      renotify: true
+    });
+  } catch(e) {
+    console.error('Notification error:', e);
+  }
+}
 
     function startListening() {
       // Listen to token doc

@@ -95,6 +95,48 @@
     .hero-sub { color: #6e6e73; }
     .dark .hero-sub { color: #aeaeb2; }
 
+
+    /* ============================================
+       DARK MODE SPOTLIGHT CARD EFFECT
+       ============================================ */
+    .dark .sq-card-d {
+      overflow: hidden;
+    }
+    .dark .sq-card-d::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        600px circle at var(--x, -999px) var(--y, -999px),
+        rgba(255,255,255,0.08),
+        transparent 40%
+      );
+      z-index: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .dark .sq-card-d::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        300px circle at var(--x, -999px) var(--y, -999px),
+        rgba(255,255,255,0.06),
+        transparent 40%
+      );
+      z-index: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .dark .sq-card-d:hover::after {
+      opacity: 1;
+    }
+    /* Make card content sit above the glow layer */
+    .sq-card-d > * { position: relative; z-index: 1; }
+
     /* ============================================
        SCROLLBAR
        ============================================ */
@@ -303,11 +345,19 @@
           </ul>
         </div>
       </div>
-      <div class="border-t border-black/[0.05] dark:border-white/[0.05] pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs sq-text-dim">
-        <p>© 2026 SmartQueue — GH Raisoni College of Engineering and Management, Jalgaon.</p>
-        <p>Built by BCA Department</p>
-      </div>
-    </div>
+      <div class="border-t border-black/[0.05] dark:border-white/[0.05] pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs sq-text-dim">
+  <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+    <p>© 2026 SmartQueue — GH Raisoni College of Engineering and Management, Jalgaon.</p>
+    <p class="hidden md:block text-black/20 dark:text-white/20">|</p>
+    <p>Built by BCA Department</p>
+  </div>
+  <div class="flex items-center gap-5">
+    <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Privacy</a>
+    <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Terms</a>
+    <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Cookies</a>
+  </div>
+</div>
+
   </footer>
 
   <script type="module">
@@ -369,10 +419,47 @@
                 </div>`;
               liveCounters.appendChild(card);
             });
+            // Re-init spotlight for newly added cards
+            document.dispatchEvent(new Event('countersLoaded'));
           }, () => {});
         }
       }
     });
+  </script>
+
+
+  <script>
+    // Spotlight mouse tracking — dark mode only
+    function initSpotlight() {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (!isDark) return;
+
+      const cards = document.querySelectorAll('.sq-card-d');
+      cards.forEach(card => {
+        card.addEventListener('pointermove', (e) => {
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty('--x', (e.clientX - rect.left) + 'px');
+          card.style.setProperty('--y', (e.clientY - rect.top) + 'px');
+        });
+        card.addEventListener('pointerleave', () => {
+          card.style.setProperty('--x', '-999px');
+          card.style.setProperty('--y', '-999px');
+        });
+      });
+    }
+
+    // Run on load and whenever theme changes
+    window.addEventListener('DOMContentLoaded', () => {
+      initSpotlight();
+
+      // Re-run when dark class toggled on html element
+      const observer = new MutationObserver(() => initSpotlight());
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    });
+
+    // Re-init after live counters load (dynamically added cards)
+    const origOnSnapshot = window.__origOnSnapshot;
+    document.addEventListener('countersLoaded', () => initSpotlight());
   </script>
 
 </body>

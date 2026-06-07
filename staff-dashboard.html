@@ -9,6 +9,46 @@
   <style>
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+    /* Queue status toggle */
+    .sq-toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; border-radius: 16px;
+      border: 1px solid var(--border-s);
+      background: var(--bg);
+      transition: all 0.3s;
+    }
+    .sq-toggle-label { font-size: 13px; font-weight: 600; color: var(--text); }
+    .sq-toggle-sub   { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+    .sq-toggle-btn {
+      width: 52px; height: 28px; border-radius: 999px;
+      border: none; cursor: pointer; position: relative;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    .sq-toggle-btn::after {
+      content: '';
+      position: absolute; top: 3px; left: 3px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: white;
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .sq-toggle-btn.open   { background: #34c759; }
+    .sq-toggle-btn.closed { background: #aeaeb2; }
+    .sq-toggle-btn.open::after   { transform: translateX(24px); }
+    .sq-toggle-btn.closed::after { transform: translateX(0); }
+
+    /* Closed overlay on action buttons */
+    .sq-closed-notice {
+      display: none;
+      text-align: center; padding: 20px;
+      background: rgba(255,59,48,0.05);
+      border: 1px solid rgba(255,59,48,0.15);
+      border-radius: 16px;
+      color: #ff3b30; font-size: 13px; font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -40,8 +80,19 @@
       </select>
     </div>
 
-    <!-- Control panel (shown after selection) -->
+    <!-- Control panel -->
     <div id="control-panel" style="display:none;flex-direction:column;gap:14px;">
+
+      <!-- Queue open/close toggle -->
+      <div class="sq-card sq-fade-in">
+        <div class="sq-toggle-row">
+          <div>
+            <div class="sq-toggle-label">Queue Status</div>
+            <div id="toggle-sub" class="sq-toggle-sub">Queue is open — students can join</div>
+          </div>
+          <button id="queue-toggle-btn" class="sq-toggle-btn open" onclick="toggleQueueStatus()"></button>
+        </div>
+      </div>
 
       <!-- Live stats -->
       <div class="sq-card sq-fade-in">
@@ -65,20 +116,25 @@
         </div>
       </div>
 
-      <!-- Action buttons -->
-      <div class="action-grid">
-        <button onclick="callNext()" class="sq-btn sq-btn-primary sq-btn-lg">
-          ➡️ Call Next
-        </button>
-        <button onclick="markComplete()" class="sq-btn sq-btn-ghost sq-btn-lg">
-          ✅ Mark Complete
-        </button>
+      <!-- Closed notice (shown when queue is closed) -->
+      <div id="closed-notice" class="sq-closed-notice">
+        🚫 Queue is closed — students cannot join. Open the queue to enable actions.
       </div>
 
-      <!-- Reset -->
-      <button onclick="resetQueue()" class="sq-btn sq-btn-danger sq-btn-full" style="padding:12px;">
-        🔄 Reset Queue for Today
-      </button>
+      <!-- Action buttons -->
+      <div id="action-buttons">
+        <div class="action-grid">
+          <button onclick="callNext()" class="sq-btn sq-btn-primary sq-btn-lg">
+            ➡️ Call Next
+          </button>
+          <button onclick="markComplete()" class="sq-btn sq-btn-ghost sq-btn-lg">
+            ✅ Mark Complete
+          </button>
+        </div>
+        <button onclick="resetQueue()" class="sq-btn sq-btn-danger sq-btn-full" style="padding:12px;">
+          🔄 Reset Queue for Today
+        </button>
+      </div>
 
       <!-- Waiting list -->
       <div class="sq-card sq-fade-in">
@@ -99,12 +155,12 @@
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import {
       doc, getDoc, getDocs, collection, onSnapshot,
-      updateDoc, query, where, orderBy, increment,
-      deleteDoc, limit
+      updateDoc, query, where, orderBy, deleteDoc, limit
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     let currentQueueId = null;
     let unsubQueue = null, unsubTokens = null;
+    let isQueueActive = true;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) { window.location.href = 'staff-login.html'; return; }
@@ -144,6 +200,10 @@
         const d = snap.data();
         document.getElementById('current-counter').textContent = d.currentCounter ?? 0;
         document.getElementById('last-token').textContent      = d.lastToken ?? 0;
+
+        // Update toggle UI based on Firestore isActive value
+        isQueueActive = d.isActive !== false; // default true if field missing
+        updateToggleUI(isQueueActive);
       });
 
       unsubTokens = onSnapshot(
@@ -151,8 +211,8 @@
           where('status', '==', 'waiting'), orderBy('tokenNumber')),
         snap => {
           const count = snap.size;
-          document.getElementById('waiting-count').textContent  = count;
-          document.getElementById('waiting-badge').textContent  = count + ' students';
+          document.getElementById('waiting-count').textContent = count;
+          document.getElementById('waiting-badge').textContent = count + ' students';
 
           const list = document.getElementById('waiting-list');
           list.innerHTML = '';
@@ -179,6 +239,34 @@
       );
     };
 
+    function updateToggleUI(active) {
+      const btn     = document.getElementById('queue-toggle-btn');
+      const sub     = document.getElementById('toggle-sub');
+      const notice  = document.getElementById('closed-notice');
+      const actions = document.getElementById('action-buttons');
+
+      if (active) {
+        btn.className = 'sq-toggle-btn open';
+        sub.textContent = 'Queue is open — students can join';
+        notice.style.display  = 'none';
+        actions.style.display = 'block';
+      } else {
+        btn.className = 'sq-toggle-btn closed';
+        sub.textContent = 'Queue is closed — students cannot join';
+        notice.style.display  = 'block';
+        actions.style.display = 'none';
+      }
+    }
+
+    window.toggleQueueStatus = async function() {
+      if (!currentQueueId) return;
+      const newStatus = !isQueueActive;
+      const label = newStatus ? 'open' : 'close';
+      if (!confirm(`Are you sure you want to ${label} this queue?`)) return;
+      await updateDoc(doc(db, 'queues', currentQueueId), { isActive: newStatus });
+      // UI updates automatically via onSnapshot
+    };
+
     window.callNext = async function() {
       if (!currentQueueId) return;
       const nextSnap = await getDocs(query(
@@ -186,22 +274,22 @@
         where('status', '==', 'waiting'), orderBy('tokenNumber', 'asc'), limit(1)
       ));
       if (nextSnap.empty) { alert('No more students waiting.'); return; }
-      const nextDoc  = nextSnap.docs[0];
-      const nextNum  = nextDoc.data().tokenNumber;
+      const nextDoc = nextSnap.docs[0];
+      const nextNum = nextDoc.data().tokenNumber;
       await updateDoc(nextDoc.ref, { status: 'called', calledAt: new Date() });
       await updateDoc(doc(db, 'queues', currentQueueId), { currentCounter: nextNum });
     };
 
     window.markComplete = async function() {
       if (!currentQueueId) return;
-      const qSnap  = await getDoc(doc(db, 'queues', currentQueueId));
+      const qSnap   = await getDoc(doc(db, 'queues', currentQueueId));
       const current = qSnap.data().currentCounter;
-      const tSnap  = await getDocs(query(
+      const tSnap   = await getDocs(query(
         collection(db, 'queues', currentQueueId, 'tokens'),
         where('tokenNumber', '==', current)
       ));
       tSnap.forEach(async tDoc => {
-        const calledAt    = tDoc.data().calledAt?.toDate();
+        const calledAt = tDoc.data().calledAt?.toDate();
         const completedAt = new Date();
         const serviceDuration = calledAt ? Math.round((completedAt - calledAt) / 1000) : null;
         await updateDoc(tDoc.ref, { status: 'complete', completedAt, serviceDuration });

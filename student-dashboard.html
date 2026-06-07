@@ -124,22 +124,21 @@
         const waitText   = waiting === 0 ? '✓ No wait' : `${waiting} waiting`;
         const icon       = icons[queueId] || '🏢';
 
+        const isActive = queue.isActive !== false;
+
         const card = document.createElement('div');
         card.className = 'sq-card sq-card-lift sq-fade-in queue-card';
         card.innerHTML = `
-          <div class="queue-icon">${icon}</div>
+          <div class="queue-icon" style="${!isActive ? 'opacity:0.4;' : ''}">${icon}</div>
           <div class="queue-info">
-            <div class="queue-name">${queue.deptName}</div>
-            <span class="sq-badge ${badgeClass}">${waitText}</span>
+            <div class="queue-name" style="${!isActive ? 'color:var(--text-dim);' : ''}">${queue.deptName}</div>
+            <span class="sq-badge ${isActive ? badgeClass : 'sq-badge-done'}">${isActive ? waitText : 'Queue closed'}</span>
             <div class="queue-meta">Now serving: <span>#${queue.currentCounter ?? 0}</span></div>
           </div>
-          <button
-           data-queue-id="${queueId}"
-           data-dept-name="${queue.deptName}"
-           onclick="joinQueue('${queueId}', this.dataset.deptName, this)"
-            class="sq-btn sq-btn-primary sq-btn-sm">
-            Join
-          </button>`;
+          ${isActive
+            ? `<button data-queue-id="${queueId}" data-dept-name="${queue.deptName}" onclick="joinQueue('${queueId}', this.dataset.deptName, this)" class="sq-btn sq-btn-primary sq-btn-sm">Join</button>`
+            : `<span class="sq-badge" style="background:rgba(255,59,48,0.08);color:#ff3b30;border:1px solid rgba(255,59,48,0.2);white-space:nowrap;flex-shrink:0;">🚫 Closed</span>`
+          }`;
         list.appendChild(card);
       }
     }

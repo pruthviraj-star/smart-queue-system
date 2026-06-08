@@ -7,6 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="theme.js"></script>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#0071e3"/>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -168,6 +170,7 @@
       .cta-pad { padding: 40px 24px !important; }
     }
   </style>
+  
 </head>
 <body class="antialiased min-h-screen bg-[#f5f5f7] text-[#1d1d1f] dark:text-white">
 
@@ -315,51 +318,84 @@
   </div>
 
   <!-- Footer -->
-  <footer class="sq-footer border-t border-black/[0.05] dark:border-white/[0.05]">
-    <div class="max-w-5xl mx-auto px-5 py-16">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
-        <div>
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center font-bold text-sm text-white dark:text-black">Q</div>
-            <span class="font-bold sq-text-main text-base tracking-tight">SmartQueue</span>
+<footer class="sq-footer border-t border-black/[0.05] dark:border-white/[0.05]">
+  <div class="max-w-5xl mx-auto px-5 py-16">
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center font-bold text-sm text-white dark:text-black">
+            Q
           </div>
-          <p class="sq-text-sub text-sm leading-relaxed max-w-xs">
-            A premium queue management utility designed for GH Raisoni College, Jalgaon.
-          </p>
+          <span class="font-bold sq-text-main text-base tracking-tight">SmartQueue</span>
         </div>
-        <div>
-          <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">Navigation</h4>
-          <ul class="space-y-3">
-            <li><a href="index.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Home</a></li>
-            <li><a href="student_register.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Create Account</a></li>
-            <li><a href="student-login.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Student Portal</a></li>
-            <li><a href="staff-login.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Staff Portal</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">Institution</h4>
-          <ul class="space-y-3">
-            <li><a href="https://ghrcemj.raisoni.net/" target="_blank" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Official Portal</a></li>
-            <li><a href="mailto:info@raisoni.net" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Institutional Mail</a></li>
-            <li><a href="tel:+9102572264881" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Support Contact</a></li>
-          </ul>
-        </div>
+        <p class="sq-text-sub text-sm leading-relaxed max-w-xs">
+          A premium queue management utility designed for GH Raisoni College, Jalgaon.
+        </p>
       </div>
-      <div class="border-t border-black/[0.05] dark:border-white/[0.05] pt-6 flex flex-col gap-3 text-xs sq-text-dim">
-  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-    <p>© 2026 SmartQueue — GH Raisoni College of Engineering and Management, Jalgaon.</p>
-    <p class="flex-shrink-0">Built by BCA Department</p>
+
+      <div>
+        <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">
+          Navigation
+        </h4>
+        <ul class="space-y-3">
+          <li><a href="index.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Home</a></li>
+          <li><a href="student_register.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Create Account</a></li>
+          <li><a href="student-login.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Student Portal</a></li>
+          <li><a href="staff-login.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Staff Portal</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">
+          Institution
+        </h4>
+        <ul class="space-y-3">
+          <li>
+            <a href="https://ghrcemj.raisoni.net/" target="_blank"
+              class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">
+              Official Portal
+            </a>
+          </li>
+          <li>
+            <a href="mailto:info@raisoni.net"
+              class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">
+              Institutional Mail
+            </a>
+          </li>
+          <li>
+            <a href="tel:+9102572264881"
+              class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">
+              Support Contact
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">
+          Legal
+        </h4>
+        <ul class="space-y-3">
+          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Privacy Policy</a></li>
+          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Terms of Service</a></li>
+          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Cookie Policy</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="border-t border-black/[0.05] dark:border-white/[0.05] pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs sq-text-dim">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+        <p>© 2026 SmartQueue</p>
+        <p class="hidden sm:block text-black/20 dark:text-white/20">|</p>
+        <p>Built by BCA Department</p>
+      </div>
+    </div>
+
   </div>
-  <div class="flex items-center gap-5">
-    <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Privacy</a>
-    <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Terms</a>
-    <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Cookies</a>
-  </div>
-</div>
-
-
-  </footer>
-
+</footer>
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";

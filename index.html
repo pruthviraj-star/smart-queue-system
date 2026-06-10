@@ -74,19 +74,17 @@
        ============================================ */
     .hero-bg {
       position: absolute; inset: 0; z-index: 0;
-      background: linear-gradient(135deg, #e8f0fe 0%, #f3e8ff 25%, #fce4ec 50%, #e8f5e9 75%, #e3f2fd 100%);
-      background-size: 400% 400%;
-      animation: gradientShift 14s ease infinite;
+      background-image: url('white background 2.png');
+      background-size: cover;
+      background-position: center;
+      transition: opacity 0.5s ease, filter 0.5s ease;
     }
     .dark .hero-bg {
-      background: linear-gradient(135deg, #0d0d1f 0%, #150d1f 25%, #1f0d10 50%, #0d1f10 75%, #0d101f 100%);
-      background-size: 400% 400%;
-      animation: gradientShift 14s ease infinite;
-    }
-    @keyframes gradientShift {
-      0%   { background-position: 0% 50%; }
-      50%  { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      background-image: url('white background 2.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.15;
+      filter: brightness(0.2) saturate(1.2);
     }
 
     /* ============================================
@@ -190,6 +188,7 @@
       <a href="staff-login.html" class="px-4 py-2 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-xs font-semibold sq-text-main transition duration-300">
         Staff Portal
       </a>
+      
       <button id="theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition duration-300"></button>
     </div>
   </nav>
@@ -317,11 +316,10 @@
     </div>
   </div>
 
-  <!-- Footer -->
-<footer class="sq-footer border-t border-black/[0.05] dark:border-white/[0.05]">
-  <div class="max-w-5xl mx-auto px-5 py-16">
-
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+<!-- Footer -->
+  <footer class="sq-footer border-t border-black/[0.05] dark:border-white/[0.05]">
+    <div class="max-w-5xl mx-auto px-5 pt-16 pb-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
 
       <div>
         <div class="flex items-center gap-3 mb-5">
@@ -331,8 +329,14 @@
           <span class="font-bold sq-text-main text-base tracking-tight">SmartQueue</span>
         </div>
         <p class="sq-text-sub text-sm leading-relaxed max-w-xs">
-          A premium queue management utility designed for GH Raisoni College, Jalgaon.
-        </p>
+            Virtual Queue System For college management.
+          </p>
+          <div style="margin-top:20px;">
+            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style="background:rgba(52,199,89,0.08);color:#34c759;border:1px solid rgba(52,199,89,0.2);">
+              <span style="width:6px;height:6px;border-radius:50%;background:#34c759;display:inline-block;animation:livePulse 2s infinite;"></span>
+              System Live
+            </span>
+          </div>
       </div>
 
       <div>
@@ -375,26 +379,26 @@
 
       <div>
         <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">
-          Legal
+          More
         </h4>
         <ul class="space-y-3">
-          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Privacy Policy</a></li>
-          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Terms of Service</a></li>
-          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Cookie Policy</a></li>
+          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300"></a></li>
+          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300"></a></li>
+          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300"></a></li>
         </ul>
       </div>
 
     </div>
 
-    <div class="border-t border-black/[0.05] dark:border-white/[0.05] pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs sq-text-dim">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-        <p>© 2026 SmartQueue</p>
-        <p class="hidden sm:block text-black/20 dark:text-white/20">|</p>
-        <p>Built by BCA Department</p>
+    <div class="border-t border-black/[0.05] dark:border-white/[0.05] pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs sq-text-dim">
+        <p>© 2026 SmartQueue. All rights reserved.</p>
+        <div class="flex items-center gap-5">
+          <a href="about.html" class="hover:text-black dark:hover:text-white transition duration-300">About</a>
+          <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Privacy</a>
+          <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Terms</a>
+          <a href="#" class="hover:text-black dark:hover:text-white transition duration-300">Cookies</a>
+        </div>
       </div>
-    </div>
-
-  </div>
 </footer>
   <script type="module">
     import { auth, db } from './firebase-config.js';

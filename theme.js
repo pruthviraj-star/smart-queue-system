@@ -16,8 +16,10 @@ function getInitialTheme() {
 function setTheme(theme) {
   if (theme === 'dark') {
     document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
   } else {
     document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
   }
   window.localStorage.setItem('color-theme', theme);
   updateToggleButton(theme);
@@ -32,6 +34,10 @@ function toggleTheme() {
 const currentTheme = getInitialTheme();
 if (currentTheme === 'dark') {
   document.documentElement.classList.add('dark');
+  document.documentElement.classList.remove('light');
+} else {
+  document.documentElement.classList.remove('dark');
+  document.documentElement.classList.add('light');
 }
 
 // Function to update the button icon if it exists
@@ -39,9 +45,9 @@ function updateToggleButton(theme) {
   const btn = document.getElementById('theme-toggle');
   if (btn) {
     if (theme === 'dark') {
-      btn.innerHTML = `<svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 4.22a1 1 0 011.415 0l.708.707a1 1 0 01-1.414 1.414l-.708-.707a1 1 0 010-1.414zM6.343 7.757a1 1 0 01-1.414-1.414l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM10 5a5 5 0 100 10 5 5 0 000-10zm-1 12a1 1 0 112 0v1a1 1 0 11-2 0v-1zm-6.22-4.22a1 1 0 010-1.415l.708-.707a1 1 0 011.414 1.414l-.708.707a1 1 0 01-1.414 0zM16.343 14.243a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 010-1.414zM18 10a1 1 0 110-2h1a1 1 0 110 2h-1zM2 10a1 1 0 110-2H1a1 1 0 110 2h1z"></path></svg>`;
+      btn.innerHTML = `<svg style="width:18px;height:18px;color:#fbbf24;" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 4.22a1 1 0 011.415 0l.708.707a1 1 0 01-1.414 1.414l-.708-.707a1 1 0 010-1.414zM6.343 7.757a1 1 0 01-1.414-1.414l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414zM10 5a5 5 0 100 10 5 5 0 000-10zm-1 12a1 1 0 112 0v1a1 1 0 11-2 0v-1zm-6.22-4.22a1 1 0 010-1.415l.708-.707a1 1 0 011.414 1.414l-.708.707a1 1 0 01-1.414 0zM16.343 14.243a1 1 0 011.414 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 010-1.414zM18 10a1 1 0 110-2h1a1 1 0 110 2h-1zM2 10a1 1 0 110-2H1a1 1 0 110 2h1z"></path></svg>`;
     } else {
-      btn.innerHTML = `<svg class="w-5 h-5 text-slate-700" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>`;
+      btn.innerHTML = `<svg style="width:18px;height:18px;color:#636366;" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>`;
     }
   }
 }

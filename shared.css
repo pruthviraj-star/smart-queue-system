@@ -317,3 +317,10 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* reCAPTCHA dark mode blend */
+.dark .g-recaptcha {
+  filter: invert(0.9) hue-rotate(180deg);
+  border-radius: 8px;
+  overflow: hidden;
+}

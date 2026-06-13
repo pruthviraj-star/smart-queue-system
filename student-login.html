@@ -6,6 +6,7 @@
   <title>Student Login | SmartQueue</title>
   <link rel="stylesheet" href="shared.css"/>
   <script src="theme.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -44,6 +45,13 @@
 
         <div id="error-msg" class="sq-alert sq-alert-error" style="margin-bottom:16px;"></div>
 
+        <!-- reCAPTCHA v2 — hidden on localhost, shown on production -->
+        <div id="captcha-wrap" style="margin-bottom:16px;display:none;">
+          <div class="g-recaptcha"
+            data-sitekey="6LfCjhwtAAAAAIYD0Xwi0mH-TXbWNR8XrV5zvmcL">
+          </div>
+        </div>
+
         <button onclick="loginStudent()" id="login-btn" class="sq-btn sq-btn-primary sq-btn-full sq-btn-lg" style="margin-bottom:16px;">
           Login
         </button>
@@ -62,6 +70,15 @@
     </div>
   </div>
 
+  <script>
+    // Show CAPTCHA only on production
+    const isLocalhost = window.location.hostname === 'localhost' ||
+                        window.location.hostname === '127.0.0.1';
+    if (!isLocalhost) {
+      document.getElementById('captcha-wrap').style.display = 'block';
+    }
+  </script>
+
   <script type="module">
     import { auth } from './firebase-config.js';
     import { signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -73,6 +90,19 @@
       const btn      = document.getElementById('login-btn');
 
       errorEl.classList.remove('show');
+
+      // reCAPTCHA check — only on production
+      const isLocalhost = window.location.hostname === 'localhost' ||
+                          window.location.hostname === '127.0.0.1';
+      if (!isLocalhost) {
+        const captchaResponse = grecaptcha.getResponse();
+        if (!captchaResponse) {
+          errorEl.textContent = 'Please complete the CAPTCHA verification.';
+          errorEl.classList.add('show');
+          return;
+        }
+      }
+
       btn.textContent = 'Logging in…';
       btn.disabled = true;
 
@@ -84,6 +114,7 @@
         errorEl.classList.add('show');
         btn.textContent = 'Login';
         btn.disabled = false;
+        if (!isLocalhost && typeof grecaptcha !== 'undefined') grecaptcha.reset();
       }
     };
 

@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -24,37 +23,35 @@ Key information about SmartQueue:
 - Available departments: Fees Counter, Admissions, Scholarship Section
 - Students register with email and password, then join a queue to get a token number
 - Token page shows real-time position, estimated wait time, and sends notifications when turn is near
-- Browser notifications are sent when student is 3 positions away and when it's their turn
+- Browser notifications are sent when student is 3 positions away and when it is their turn
 - Staff can call next token, mark complete, open/close queue, and reset queue
 - Admin can view analytics - tokens issued, students served, average service time
 - Students can leave the queue anytime
 - Queue resets daily by staff
 
 Common questions and answers:
-- How to join queue: Login → Student Dashboard → Click Join on your department
-- How to leave queue: Go to Your Token page → Click Leave Queue
+- How to join queue: Login then Student Dashboard then Click Join on your department
+- How to leave queue: Go to Your Token page then Click Leave Queue
 - Token number: Sequential number assigned when you join
 - Estimated wait: Calculated from real service history
 - Notifications: Allow browser notifications when prompted
-- Forgot password: Click "Forgot password" on login page, enter email
-- Staff login: Use staff credentials at /staff-login.html
+- Forgot password: Click Forgot password on login page, enter email
+- Staff login: Use staff credentials at staff-login page
 - Queue closed: Staff has closed the queue for today, try again tomorrow
 
 Keep responses short, friendly, and helpful. Use simple English.`;
 
   try {
     const response = await fetch(
-`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,      {
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: systemPrompt }]
-          },
           contents: [
             {
               role: 'user',
-              parts: [{ text: message }]
+              parts: [{ text: systemPrompt + '\n\nUser question: ' + message }]
             }
           ],
           generationConfig: {

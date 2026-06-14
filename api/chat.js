@@ -49,7 +49,7 @@ Keep responses short, friendly, and helpful. Use simple English. Maximum 2-3 sen
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'llama3-8b-8192',
+        model: 'llama-3.3-70b-versatile',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message }

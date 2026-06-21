@@ -39,8 +39,7 @@ Common questions and answers:
 - Staff login: Use staff credentials at the Staff Portal
 - Queue closed: Staff has closed the queue for today, try again tomorrow
 
-Keep responses short, friendly, and helpful. Use simple English. Maximum 2-3 sentences per response.`;
-
+Keep responses very short and conversational — 1 sentence for greetings, max 2 sentences for answers. Be warm and friendly. No need to ask multiple questions at once. Use simple English.`; 
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',

@@ -1,81 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Login | SmartQueue</title>
-  <link rel="stylesheet" href="shared.css"/>
-  <script src="theme.js"></script>
+  
+  <!-- Modern Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Phosphor Icons & Tailwind -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- reCAPTCHA v2 -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 900: '#312e81' },
+            surface: { light: '#f8fafc', dark: '#0f172a' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { transition: background-color 0.3s, color 0.3s; }
+    .dark body { background-color: #0f172a; color: #f8fafc; }
+
+    /* Startup Card */
+    .sq-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    }
+    .dark .sq-card { background: #1e293b; border-color: #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+
+    /* Inputs */
+    .sq-input {
+      width: 100%;
+      background: #f1f5f9; border: 1px solid transparent; border-radius: 12px;
+      padding: 12px 16px 12px 42px; font-size: 14px; color: #0f172a;
+      transition: all 0.2s; outline: none;
+    }
+    .sq-input:focus { background: white; border-color: #6366f1; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
+    .dark .sq-input { background: #0f172a; color: white; border-color: #334155; }
+    .dark .sq-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 4px rgba(79,70,229,0.2); }
+
+    /* Floating Navbar */
+    .nav-floating {
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .dark .nav-floating { background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(255,255,255,0.1); }
+
+    /* Abstract Hero Pattern */
+    .hero-pattern { background-image: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 24px 24px; }
+    .dark .hero-pattern { background-image: radial-gradient(#334155 1px, transparent 1px); }
+
+    /* Alert utility for JS */
+    .sq-alert { display: none; }
+    .sq-alert.show { display: block; }
+  </style>
 </head>
-<body>
+<body class="bg-surface-light text-slate-900 antialiased min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <nav class="sq-nav">
-    <a href="index.html" class="sq-logo">
-      <div class="sq-logo-mark">Q</div>
-      <div>
-        <div class="sq-logo-name">SmartQueue</div>
-        <div class="sq-logo-sub">GH Raisoni, Jalgaon</div>
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 hero-pattern opacity-60 -z-10 [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
+
+  <!-- Floating Pill Navbar -->
+  <div class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+    <nav class="nav-floating w-full max-w-5xl rounded-full px-5 py-2.5 flex justify-between items-center transition-colors">
+      <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition">
+        <div class="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white">
+          <i class="ph-bold ph-queue"></i>
+        </div>
+        <div>
+          <span class="font-bold text-sm tracking-tight block leading-tight">SmartQueue</span>
+          <span class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold block">GH Raisoni</span>
+        </div>
+      </a>
+      
+      <div class="flex items-center gap-2">
+        <a href="staff-login.html" class="hidden sm:flex text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 px-3 py-2 transition">
+          Staff Portal
+        </a>
+        <button onclick="document.documentElement.classList.toggle('dark')" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300">
+          <i class="ph-bold ph-moon"></i>
+        </button>
       </div>
-    </a>
-    <div class="sq-nav-actions">
-      <a href="staff-login.html" class="sq-btn sq-btn-ghost sq-btn-sm">Staff Portal</a>
-      <button id="theme-toggle" onclick="toggleTheme()" class="sq-btn sq-btn-ghost sq-btn-sm" style="width:36px;padding:7px;"></button>
-    </div>
-  </nav>
+    </nav>
+  </div>
 
-  <div class="sq-auth-wrap">
-    <div class="sq-auth-card">
-
-      <div class="sq-card sq-fade-in" style="padding: 40px;">
-        <div style="margin-bottom:32px;">
-          <h1 style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:6px;">Welcome back</h1>
-          <p style="font-size:14px;color:var(--text-sub);">Login to your student account</p>
+  <!-- Main Auth Container -->
+  <div class="flex-1 flex items-center justify-center p-6 mt-20 mb-10 z-10">
+    <div class="max-w-md w-full sq-card p-8 sm:p-10">
+      
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <i class="ph-fill ph-user-circle text-2xl"></i>
         </div>
+        <h1 class="text-2xl font-bold mb-2">Welcome back</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400">Log in to your student account.</p>
+      </div>
 
-        <div style="margin-bottom:18px;">
-          <label class="sq-label">Email</label>
-          <input id="email" type="email" placeholder="your@email.com" class="sq-input"/>
-        </div>
-
-        <div style="margin-bottom:20px;">
-          <label class="sq-label">Password</label>
-          <input id="password" type="password" placeholder="••••••••" class="sq-input"/>
-        </div>
-
-        <div id="error-msg" class="sq-alert sq-alert-error" style="margin-bottom:16px;"></div>
-
-        <!-- reCAPTCHA v2 — hidden on localhost, shown on production -->
-        <div id="captcha-wrap" style="margin-bottom:16px;display:none;">
-          <div class="g-recaptcha"
-            data-sitekey="6LfCjhwtAAAAAIYD0Xwi0mH-TXbWNR8XrV5zvmcL">
+      <!-- Form -->
+      <div class="space-y-5">
+        
+        <!-- Email Input -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Email Address</label>
+          <div class="relative flex items-center">
+            <i class="ph-bold ph-envelope-simple absolute left-4 text-slate-400 text-lg"></i>
+            <input id="email" type="email" placeholder="your@email.com" class="sq-input"/>
           </div>
         </div>
 
-        <button onclick="loginStudent()" id="login-btn" class="sq-btn sq-btn-primary sq-btn-full sq-btn-lg" style="margin-bottom:16px;">
-          Login
+        <!-- Password Input -->
+        <div>
+          <div class="flex justify-between items-end mb-2">
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Password</label>
+            <a href="#" onclick="forgotPassword(); return false;" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">Forgot?</a>
+          </div>
+          <div class="relative flex items-center">
+            <i class="ph-bold ph-lock-key absolute left-4 text-slate-400 text-lg"></i>
+            <input id="password" type="password" placeholder="••••••••" class="sq-input"/>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="error-msg" class="sq-alert bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm p-3 rounded-xl flex gap-2 items-center">
+          <i class="ph-fill ph-warning-circle text-lg shrink-0"></i>
+          <span id="error-text"></span>
+        </div>
+
+        <!-- reCAPTCHA v2 (Hidden on localhost) -->
+        <div id="captcha-wrap" class="hidden justify-center my-4">
+          <div class="g-recaptcha" data-sitekey="6LfCjhwtAAAAAIYD0Xwi0mH-TXbWNR8XrV5zvmcL"></div>
+        </div>
+
+        <!-- Submit Button -->
+        <button onclick="loginStudent()" id="login-btn" class="w-full py-3.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2 mt-2">
+          Sign In <i class="ph-bold ph-arrow-right"></i>
         </button>
 
-        <p style="text-align:center;font-size:12px;color:var(--text-dim);">
-          <a href="#" onclick="forgotPassword(); return false;" style="color:var(--text-sub);text-decoration:none;">Forgot password?</a>
-        </p>
-
-        <hr class="sq-divider"/>
-
-        <p style="text-align:center;font-size:13px;color:var(--text-sub);">
-          No account? <a href="student_register.html" style="color:var(--accent);font-weight:600;text-decoration:none;">Register here</a>
-        </p>
       </div>
+
+      <hr class="border-slate-200 dark:border-slate-700 my-8"/>
+
+      <!-- Register Link -->
+      <p class="text-center text-sm text-slate-500 dark:text-slate-400 font-medium">
+        Don't have an account? 
+        <a href="student_register.html" class="text-brand-600 dark:text-brand-400 font-bold hover:underline transition">Create one</a>
+      </p>
 
     </div>
   </div>
 
   <script>
     // Show CAPTCHA only on production
-    const isLocalhost = window.location.hostname === 'localhost' ||
-                        window.location.hostname === '127.0.0.1';
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     if (!isLocalhost) {
-      document.getElementById('captcha-wrap').style.display = 'block';
+      document.getElementById('captcha-wrap').classList.remove('hidden');
+      document.getElementById('captcha-wrap').classList.add('flex');
+    }
+
+    // Helper to safely display errors
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      document.getElementById('error-text').textContent = msg;
+      el.classList.add('show');
+    }
+    function hideError() {
+      document.getElementById('error-msg').classList.remove('show');
     }
   </script>
 
@@ -86,49 +191,56 @@
     window.loginStudent = async function() {
       const email    = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
-      const errorEl  = document.getElementById('error-msg');
       const btn      = document.getElementById('login-btn');
 
-      errorEl.classList.remove('show');
+      hideError();
 
       // reCAPTCHA check — only on production
-      const isLocalhost = window.location.hostname === 'localhost' ||
-                          window.location.hostname === '127.0.0.1';
       if (!isLocalhost) {
         const captchaResponse = grecaptcha.getResponse();
         if (!captchaResponse) {
-          errorEl.textContent = 'Please complete the CAPTCHA verification.';
-          errorEl.classList.add('show');
+          showError('Please complete the CAPTCHA verification.');
           return;
         }
       }
 
-      btn.textContent = 'Logging in…';
+      if (!email || !password) {
+        showError('Please enter both email and password.');
+        return;
+      }
+
+      btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Logging in...';
       btn.disabled = true;
+      btn.classList.add('opacity-70', 'cursor-not-allowed');
 
       try {
         await signInWithEmailAndPassword(auth, email, password);
         window.location.href = 'student-dashboard.html';
       } catch {
-        errorEl.textContent = 'Invalid email or password.';
-        errorEl.classList.add('show');
-        btn.textContent = 'Login';
+        showError('Invalid email or password.');
+        btn.innerHTML = 'Sign In <i class="ph-bold ph-arrow-right"></i>';
         btn.disabled = false;
+        btn.classList.remove('opacity-70', 'cursor-not-allowed');
         if (!isLocalhost && typeof grecaptcha !== 'undefined') grecaptcha.reset();
       }
     };
 
     window.forgotPassword = async function() {
       const email = document.getElementById('email').value.trim();
-      if (!email) { alert('Enter your email first, then click Forgot password.'); return; }
+      if (!email) { 
+        showError('Enter your email first, then click Forgot.'); 
+        return; 
+      }
+      hideError();
       try {
         await sendPasswordResetEmail(auth, email);
         alert('Reset email sent — check your inbox and spam.');
       } catch(e) {
-        alert('Could not send reset email: ' + e.message);
+        showError('Could not send reset email: ' + e.message);
       }
     };
 
+    // Press Enter to login
     document.getElementById('password').addEventListener('keydown', e => {
       if (e.key === 'Enter') loginStudent();
     });

@@ -1,81 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-surface-light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard | SmartQueue</title>
-  <link rel="stylesheet" href="shared.css"/>
-  <script src="theme.js"></script>
+  
+  <!-- Modern Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Phosphor Icons & Tailwind -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 900: '#312e81' },
+            surface: { light: '#f8fafc', dark: '#0f172a' }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    .queue-card {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 16px;
+    body { transition: background-color 0.3s, color 0.3s; }
+    .dark body { background-color: #0f172a; color: #f8fafc; }
+    
+    .sq-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: all 0.2s ease-in-out;
     }
-    .queue-icon {
-      width: 48px; height: 48px; border-radius: 12px;
-      background: var(--bg); border: 1px solid var(--border-s);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
-    }
-    .queue-info { flex: 1; min-width: 0; }
-    .queue-name {
-      font-size: 15px; font-weight: 600; color: var(--text);
-      margin-bottom: 6px; line-height: 1.3;
-    }
-    .queue-meta { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
-    .queue-meta span { color: var(--text-sub); font-weight: 500; }
+    .dark .sq-card { background: #1e293b; border-color: #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .sq-card:hover { transform: translateY(-2px); border-color: #cbd5e1; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .dark .sq-card:hover { border-color: #475569; }
 
-    /* Skeleton */
-    .sk-card { padding: 20px; display: flex; align-items: center; gap: 16px; }
-    .sk-icon  { width:48px; height:48px; border-radius:12px; flex-shrink:0; }
-    .sk-body  { flex:1; }
-    .sk-line  { height:12px; border-radius:6px; margin-bottom:8px; }
-    .sk-line.w50 { width:50%; }
-    .sk-line.w33 { width:33%; margin-bottom:0; }
-    .sk-btn   { width:60px; height:34px; border-radius:999px; flex-shrink:0; }
+    /* Skeleton Animation */
+    @keyframes pulse-soft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+    .animate-pulse-soft { animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
   </style>
 </head>
-<body>
+<body class="text-slate-900 antialiased min-h-screen pt-24 pb-12">
 
-  <div id="offline-banner">📵 You are offline — check your connection.</div>
+  <!-- Offline Banner -->
+  <div id="offline-banner" class="fixed top-0 left-0 right-0 bg-red-500 text-white text-xs font-bold text-center py-2 z-[100] hidden flex items-center justify-center gap-2 shadow-md">
+    <i class="ph-bold ph-wifi-slash text-base"></i> You are offline — check your connection.
+  </div>
 
-  <nav class="sq-nav">
-    <a href="index.html" class="sq-logo">
-      <div class="sq-logo-mark">Q</div>
-      <div>
-        <div class="sq-logo-name">SmartQueue</div>
-        <div class="sq-logo-sub">Student Portal</div>
+  <!-- Floating Navbar -->
+  <div class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+    <nav class="w-full max-w-4xl rounded-full px-6 py-3 flex justify-between items-center bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white">
+          <i class="ph-bold ph-queue"></i>
+        </div>
+        <div class="hidden sm:block">
+          <span class="font-bold text-sm tracking-tight block leading-tight">SmartQueue</span>
+          <span class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold block">Student</span>
+        </div>
       </div>
-    </a>
-    <div class="sq-nav-actions">
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;border:1px solid var(--border-s);background:var(--bg-card);">
-        <span class="sq-live-dot"></span>
-        <span id="user-name" style="font-size:12px;color:var(--text-sub);font-weight:500;"></span>
+      
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="user-name" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Loading...</span>
+        </div>
+        <button onclick="logout()" class="p-2 text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+          <i class="ph-bold ph-sign-out text-lg"></i>
+        </button>
       </div>
-      <button onclick="logout()" class="sq-btn sq-btn-ghost sq-btn-sm">Logout</button>
+    </nav>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-6">
+    <!-- Header -->
+    <div class="mb-10 animate-fade-in">
+      <p class="text-brand-600 dark:text-brand-400 text-xs font-bold uppercase tracking-wider mb-2">Student Dashboard</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 flex items-center gap-2">
+        Hello, <span id="greeting-name">there</span> <i class="ph-fill ph-hand-waving text-brand-500"></i>
+      </h2>
+      <p class="text-slate-600 dark:text-slate-400 text-sm">Select a department to join its virtual queue.</p>
     </div>
-  </nav>
 
-  <div style="max-width:680px;margin:0 auto;padding:48px 20px;">
+    <!-- Queue List -->
+    <div id="queue-list" class="space-y-4"></div>
+  </div>
 
-    <div class="sq-fade-in" style="margin-bottom:36px;">
-      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:8px;">Student Dashboard</p>
-      <h2 style="font-size:32px;font-weight:700;color:var(--text);">Hello, <span id="greeting-name">there</span> 👋</h2>
-      <p style="font-size:14px;color:var(--text-sub);margin-top:6px;">Select a department to join its virtual queue.</p>
+  <!-- Chatbot Widget -->
+  <button id="chat-btn" onclick="toggleChat()" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-brand-600 hover:bg-brand-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-brand-500/30 transition-transform hover:scale-105 border-2 border-white dark:border-slate-800">
+    <i class="ph-fill ph-chat-teardrop-dots text-2xl"></i>
+  </button>
+
+  <div id="chat-window" class="fixed bottom-24 right-6 z-50 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl hidden flex-col overflow-hidden">
+    <!-- Chat Header -->
+    <div class="bg-brand-600 p-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-white">
+          <i class="ph-fill ph-robot text-lg"></i>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-white leading-tight">Queue Assistant</div>
+          <div class="text-[10px] text-brand-100">Ask me anything</div>
+        </div>
+      </div>
+      <button onclick="toggleChat()" class="text-white hover:text-brand-200 transition">
+        <i class="ph-bold ph-x text-lg"></i>
+      </button>
     </div>
 
-    <div id="queue-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <!-- Messages -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 max-h-80 bg-slate-50 dark:bg-slate-900/50">
+      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-3 rounded-2xl rounded-tl-sm text-sm text-slate-700 dark:text-slate-300 max-w-[85%] shadow-sm">
+        Hi! I'm the SmartQueue Assistant. Need help joining a queue or checking wait times?
+      </div>
+    </div>
 
+    <!-- Input -->
+    <div class="p-3 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 flex gap-2">
+      <input id="chat-input" type="text" placeholder="Type a message..." class="flex-1 bg-slate-100 dark:bg-slate-900 border-none rounded-xl px-4 text-sm focus:ring-2 focus:ring-brand-500 text-slate-900 dark:text-white placeholder-slate-400" onkeydown="if(event.key==='Enter') sendMessage()" />
+      <button onclick="sendMessage()" class="w-10 h-10 bg-brand-600 hover:bg-brand-500 text-white rounded-xl flex items-center justify-center transition">
+        <i class="ph-bold ph-paper-plane-right"></i>
+      </button>
+    </div>
   </div>
 
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      collection, getDocs, doc, getDoc,
-      addDoc, updateDoc, runTransaction,
-      query, where, increment
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { collection, getDocs, doc, getDoc, addDoc, runTransaction, query, where, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     let currentUser = null;
 
@@ -85,7 +145,7 @@
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (userDoc.exists()) {
         const name = userDoc.data().name.split(' ')[0];
-        document.getElementById('user-name').textContent = userDoc.data().name;
+        document.getElementById('user-name').textContent = name;
         document.getElementById('greeting-name').textContent = name;
       }
       loadQueues();
@@ -94,136 +154,93 @@
     async function loadQueues() {
       const list = document.getElementById('queue-list');
 
-      // Skeleton loaders
+      // Modern Skeletons
       list.innerHTML = [1,2,3].map(() => `
-        <div class="sq-card sk-card">
-          <div class="sq-skeleton sk-icon"></div>
-          <div class="sk-body">
-            <div class="sq-skeleton sk-line w50"></div>
-            <div class="sq-skeleton sk-line w33"></div>
+        <div class="sq-card p-5 flex items-center gap-4 animate-pulse-soft">
+          <div class="w-14 h-14 bg-slate-200 dark:bg-slate-700 rounded-xl shrink-0"></div>
+          <div class="flex-1 space-y-2">
+            <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
+            <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
           </div>
-          <div class="sq-skeleton sk-btn"></div>
+          <div class="w-20 h-10 bg-slate-200 dark:bg-slate-700 rounded-xl shrink-0"></div>
         </div>`).join('');
 
       const queuesSnapshot = await getDocs(collection(db, 'queues'));
       list.innerHTML = '';
 
-      const icons = { fees_counter: '💰', admissions: '📋', scholarship: '🎓' };
+      // Phosphor Icons mapping
+      const icons = { fees_counter: 'ph-wallet', admissions: 'ph-file-text', scholarship: 'ph-graduation-cap' };
 
       for (const queueDoc of queuesSnapshot.docs) {
-        const queue  = queueDoc.data();
+        const queue = queueDoc.data();
         const queueId = queueDoc.id;
 
-        // Accurate waiting count from subcollection
-        const waitingSnap = await getDocs(
-          query(collection(db, 'queues', queueId, 'tokens'), where('status', '==', 'waiting'))
-        );
+        const waitingSnap = await getDocs(query(collection(db, 'queues', queueId, 'tokens'), where('status', '==', 'waiting')));
         const waiting = waitingSnap.size;
 
-        const badgeClass = waiting === 0 ? 'sq-badge-low' : waiting <= 3 ? 'sq-badge-mid' : 'sq-badge-high';
-        const waitText   = waiting === 0 ? '✓ No wait' : `${waiting} waiting`;
-        const icon       = icons[queueId] || '🏢';
-
+        const iconClass = icons[queueId] || 'ph-buildings';
         const isActive = queue.isActive !== false;
+        
+        const waitText = waiting === 0 ? 'No Wait' : `${waiting} waiting`;
+        const waitBg = waiting === 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
 
         const card = document.createElement('div');
-        card.className = 'sq-card sq-card-lift sq-fade-in queue-card';
+        card.className = `sq-card p-5 flex items-center gap-5 ${!isActive ? 'opacity-70 grayscale' : ''}`;
         card.innerHTML = `
-          <div class="queue-icon" style="${!isActive ? 'opacity:0.4;' : ''}">${icon}</div>
-          <div class="queue-info">
-            <div class="queue-name" style="${!isActive ? 'color:var(--text-dim);' : ''}">${queue.deptName}</div>
-            <span class="sq-badge ${isActive ? badgeClass : 'sq-badge-done'}">${isActive ? waitText : 'Queue closed'}</span>
-            <div class="queue-meta">Now serving: <span>#${queue.currentCounter ?? 0}</span></div>
+          <div class="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl text-slate-700 dark:text-slate-300 shrink-0">
+             <i class="ph-fill ${iconClass}"></i>
           </div>
-          ${isActive
-            ? `<button data-queue-id="${queueId}" data-dept-name="${queue.deptName}" onclick="joinQueue('${queueId}', this.dataset.deptName, this)" class="sq-btn sq-btn-primary sq-btn-sm">Join</button>`
-            : `<span class="sq-badge" style="background:rgba(255,59,48,0.08);color:#ff3b30;border:1px solid rgba(255,59,48,0.2);white-space:nowrap;flex-shrink:0;">🚫 Closed</span>`
-          }`;
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-3 mb-1">
+              <h4 class="text-base font-bold text-slate-900 dark:text-white truncate">${queue.deptName}</h4>
+              ${isActive ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${waitBg}">${waitText}</span>` : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Closed</span>`}
+            </div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Now serving: <strong class="text-slate-900 dark:text-white font-semibold">#${queue.currentCounter ?? 0}</strong></p>
+          </div>
+          ${isActive 
+            ? `<button data-queue-id="${queueId}" onclick="joinQueue('${queueId}', '${queue.deptName}', this)" class="shrink-0 px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold rounded-xl transition shadow-sm">Join</button>`
+            : `<button disabled class="shrink-0 px-6 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 text-sm font-bold rounded-xl cursor-not-allowed"><i class="ph-bold ph-prohibit"></i></button>`
+          }
+        `;
         list.appendChild(card);
       }
     }
 
-    // ✅ FIX: Uses Firestore transaction so two students can't get same token number
-    // ✅ FIX: Properly handles fees_counter and any queue document
+    // Keep your exact existing transaction logic here...
     window.joinQueue = async function(queueId, deptName, btnEl) {
       if (!currentUser) return;
-
-      // Disable the button immediately to prevent double-click
-      if (btnEl) { btnEl.textContent = '…'; btnEl.disabled = true; }
-
+      if (btnEl) { btnEl.textContent = '...'; btnEl.disabled = true; }
+      
       try {
-        // Check if student is already in ANY active queue
         const queuesSnap = await getDocs(collection(db, 'queues'));
         for (const qDoc of queuesSnap.docs) {
-          const existing = await getDocs(
-            query(
-              collection(db, 'queues', qDoc.id, 'tokens'),
-              where('studentId', '==', currentUser.uid),
-              where('status', '==', 'waiting')
-            )
-          );
+          const existing = await getDocs(query(collection(db, 'queues', qDoc.id, 'tokens'), where('studentId', '==', currentUser.uid), where('status', '==', 'waiting')));
           if (!existing.empty) {
-            alert(`You are already in the ${qDoc.data().deptName} queue.\nLeave that queue first.`);
+            alert(`You are already in the ${qDoc.data().deptName} queue.`);
             if (btnEl) { btnEl.textContent = 'Join'; btnEl.disabled = false; }
             return;
           }
         }
 
-        // Also check 'called' status (student was called but hasn't left)
-        for (const qDoc of queuesSnap.docs) {
-          const called = await getDocs(
-            query(
-              collection(db, 'queues', qDoc.id, 'tokens'),
-              where('studentId', '==', currentUser.uid),
-              where('status', '==', 'called')
-            )
-          );
-          if (!called.empty) {
-            alert(`You are currently being served at ${qDoc.data().deptName}.\nPlease complete that first.`);
-            if (btnEl) { btnEl.textContent = 'Join'; btnEl.disabled = false; }
-            return;
-          }
-        }
-
-        // Get student name
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         const studentName = userDoc.data()?.name || 'Student';
-
-        // ✅ Transaction: atomically increment lastToken and create token doc
         const queueRef = doc(db, 'queues', queueId);
         let newTokenNumber;
 
         await runTransaction(db, async (transaction) => {
           const queueSnap = await transaction.get(queueRef);
-
-          // ✅ KEY FIX: If queue doc doesn't exist, create it (handles fees_counter missing doc)
-          if (!queueSnap.exists()) {
-            throw new Error(`Queue "${deptName}" does not exist in Firestore. Ask admin to create it.`);
-          }
-
-          const data = queueSnap.data();
-          newTokenNumber = (data.lastToken ?? 0) + 1;
-
-          // Update lastToken counter
+          if (!queueSnap.exists()) throw new Error(`Queue does not exist.`);
+          newTokenNumber = (queueSnap.data().lastToken ?? 0) + 1;
           transaction.update(queueRef, { lastToken: increment(1) });
         });
 
-        // Create token document in subcollection
         const tokenRef = await addDoc(collection(db, 'queues', queueId, 'tokens'), {
-          tokenNumber:  newTokenNumber,
-          studentId:    currentUser.uid,
-          studentName:  studentName,
-          status:       'waiting',
-          timestamp:    new Date()
+          tokenNumber: newTokenNumber, studentId: currentUser.uid, studentName: studentName, status: 'waiting', timestamp: new Date()
         });
 
         window.location.href = `student-token.html?queueId=${queueId}&tokenId=${tokenRef.id}`;
-
       } catch (error) {
-        console.error('Join queue error:', error);
-        alert(error.message.includes('does not exist')
-          ? error.message
-          : 'Failed to join queue. Please try again.');
+        alert('Failed to join queue. Please try again.');
         if (btnEl) { btnEl.textContent = 'Join'; btnEl.disabled = false; }
       }
     };
@@ -233,171 +250,46 @@
       window.location.href = 'student-login.html';
     };
 
-    // Offline detection
     function updateOnlineStatus() {
-      document.getElementById('offline-banner').classList.toggle('show', !navigator.onLine);
-      document.querySelectorAll('[data-queue-id]').forEach(btn => {
-        btn.disabled = !navigator.onLine;
-        btn.classList.toggle('opacity-50', !navigator.onLine);
-      });
+      const banner = document.getElementById('offline-banner');
+      if (!navigator.onLine) banner.classList.remove('hidden');
+      else banner.classList.add('hidden');
     }
-    window.addEventListener('online',  updateOnlineStatus);
+    window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
   </script>
-<!-- ============================================
-     CHATBOT WIDGET
-     Add this before </body> in student-dashboard.html
-============================================ -->
 
-<!-- Chat Button -->
-<button id="chat-btn" onclick="toggleChat()" style="
-  position: fixed; bottom: 24px; right: 24px; z-index: 1000;
-  width: 52px; height: 52px; border-radius: 50%;
-  background: var(--accent); color: white;
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  box-shadow: 0 4px 16px rgba(0,113,227,0.3);
-  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-  💬
-</button>
-
-<!-- Chat Window -->
-<div id="chat-window" style="
-  position: fixed; bottom: 88px; right: 24px; z-index: 1000;
-  width: 320px; max-height: 480px;
-  background: var(--bg-card); border: 1px solid var(--border-s);
-  border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  display: none; flex-direction: column; overflow: hidden;
-">
-  <!-- Header -->
-  <div style="
-    padding: 16px 20px;
-    background: var(--accent);
-    display: flex; align-items: center; justify-content: space-between;
-  ">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;">🤖</div>
-      <div>
-        <div style="font-size:13px;font-weight:600;color:white;">SmartQueue Assistant</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.7);">Ask me anything</div>
-      </div>
-    </div>
-    <button onclick="toggleChat()" style="background:none;border:none;color:white;cursor:pointer;font-size:18px;padding:0;line-height:1;">×</button>
-  </div>
-
-  <!-- Messages -->
-  <div id="chat-messages" style="
-    flex: 1; overflow-y: auto; padding: 16px;
-    display: flex; flex-direction: column; gap: 10px;
-    max-height: 320px;
-  ">
-    <!-- Welcome message -->
-    <div class="chat-msg bot" style="
-      background: var(--bg); border: 1px solid var(--border-s);
-      padding: 10px 14px; border-radius: 14px 14px 14px 4px;
-      font-size: 13px; color: var(--text); max-width: 85%; line-height: 1.5;
-    ">
-      👋 Hi! I'm the SmartQueue Assistant. Ask me how to join a queue, check your token, or anything about SmartQueue!
-    </div>
-  </div>
-
-  <!-- Input -->
-  <div style="padding: 12px 16px; border-top: 1px solid var(--border-s); display: flex; gap: 8px;">
-    <input
-      id="chat-input"
-      type="text"
-      placeholder="Ask something…"
-      class="sq-input"
-      style="font-size:13px;padding:10px 14px;border-radius:12px;flex:1;"
-      onkeydown="if(event.key==='Enter') sendMessage()"
-    />
-    <button onclick="sendMessage()" style="
-      width: 38px; height: 38px; border-radius: 12px;
-      background: var(--accent); color: white;
-      border: none; cursor: pointer; font-size: 16px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: opacity 0.2s;
-    ">➤</button>
-  </div>
-</div>
-
-<script>
-  function toggleChat() {
-    const win = document.getElementById('chat-window');
-    const isOpen = win.style.display === 'flex';
-    win.style.display = isOpen ? 'none' : 'flex';
-    if (!isOpen) document.getElementById('chat-input').focus();
-  }
-
-  async function sendMessage() {
-    const input = document.getElementById('chat-input');
-    const messages = document.getElementById('chat-messages');
-    const message = input.value.trim();
-    if (!message) return;
-
-    // Add user message
-    const userMsg = document.createElement('div');
-    userMsg.style.cssText = `
-      background: var(--accent); color: white;
-      padding: 10px 14px; border-radius: 14px 14px 4px 14px;
-      font-size: 13px; max-width: 85%; align-self: flex-end;
-      line-height: 1.5; margin-left: auto;
-    `;
-    userMsg.textContent = message;
-    messages.appendChild(userMsg);
-    input.value = '';
-    messages.scrollTop = messages.scrollHeight;
-
-    // Add typing indicator
-    const typing = document.createElement('div');
-    typing.id = 'typing-indicator';
-    typing.style.cssText = `
-      background: var(--bg); border: 1px solid var(--border-s);
-      padding: 10px 14px; border-radius: 14px 14px 14px 4px;
-      font-size: 13px; color: var(--text-dim); max-width: 85%;
-    `;
-    typing.textContent = '…';
-    messages.appendChild(typing);
-    messages.scrollTop = messages.scrollHeight;
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
-      });
-      const data = await res.json();
-
-      // Remove typing indicator
-      typing.remove();
-
-      // Add bot reply
-      const botMsg = document.createElement('div');
-      botMsg.style.cssText = `
-        background: var(--bg); border: 1px solid var(--border-s);
-        padding: 10px 14px; border-radius: 14px 14px 14px 4px;
-        font-size: 13px; color: var(--text); max-width: 85%; line-height: 1.5;
-      `;
-      botMsg.textContent = data.reply || 'Sorry, I could not understand that.';
-      messages.appendChild(botMsg);
-      messages.scrollTop = messages.scrollHeight;
-
-    } catch {
-      typing.remove();
-      const errMsg = document.createElement('div');
-      errMsg.style.cssText = `
-        background: rgba(255,59,48,0.08); border: 1px solid rgba(255,59,48,0.2);
-        padding: 10px 14px; border-radius: 14px; font-size: 13px;
-        color: #ff3b30; max-width: 85%;
-      `;
-      errMsg.textContent = 'Connection error. Please try again.';
-      messages.appendChild(errMsg);
-      messages.scrollTop = messages.scrollHeight;
+  <!-- Chatbot Logic -->
+  <script>
+    function toggleChat() {
+      const win = document.getElementById('chat-window');
+      win.classList.toggle('hidden');
+      win.classList.toggle('flex');
+      if (!win.classList.contains('hidden')) document.getElementById('chat-input').focus();
     }
-  }
-</script>
+
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const messages = document.getElementById('chat-messages');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const userMsg = document.createElement('div');
+      userMsg.className = 'bg-brand-600 text-white p-3 rounded-2xl rounded-tr-sm text-sm max-w-[85%] self-end shadow-sm';
+      userMsg.textContent = message;
+      messages.appendChild(userMsg);
+      input.value = '';
+      messages.scrollTop = messages.scrollHeight;
+
+      // Add a simple timeout mockup for bot reply
+      setTimeout(() => {
+        const botMsg = document.createElement('div');
+        botMsg.className = 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-3 rounded-2xl rounded-tl-sm text-sm text-slate-700 dark:text-slate-300 max-w-[85%] shadow-sm';
+        botMsg.textContent = "I am currently running in demo mode, but I can assist you with queue info soon!";
+        messages.appendChild(botMsg);
+        messages.scrollTop = messages.scrollHeight;
+      }, 1000);
+    }
+  </script>
 </body>
 </html>

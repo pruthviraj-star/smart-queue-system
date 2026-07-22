@@ -1,125 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cookie Policy | SmartQueue</title>
-  <link rel="stylesheet" href="shared.css"/>
-  <script src="theme.js"></script>
+  
+  <!-- Modern Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Phosphor Icons & Tailwind -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 900: '#312e81' },
+            surface: { light: '#f8fafc', dark: '#0f172a' }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    .legal-wrap { max-width: 680px; margin: 0 auto; padding: 80px 24px 60px; }
-    .legal-section { margin-bottom: 36px; }
-    .legal-section h2 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-    .legal-section p, .legal-section li { font-size: 14px; color: var(--text-sub); line-height: 1.8; }
-    .legal-section ul { padding-left: 20px; margin-top: 8px; }
-    .legal-section li { margin-bottom: 4px; }
-    .legal-date { font-size: 12px; color: var(--text-dim); margin-bottom: 40px; }
-    .cookie-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    .cookie-table th, .cookie-table td { padding: 10px 12px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-s); }
-    .cookie-table th { font-weight: 600; color: var(--text); }
-    .cookie-table td { color: var(--text-sub); }
+    body { transition: background-color 0.3s, color 0.3s; }
+    .dark body { background-color: #0f172a; color: #f8fafc; }
+
+    /* Floating Navbar */
+    .nav-floating {
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .dark .nav-floating { background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(255,255,255,0.1); }
+
+    /* Abstract Background Pattern */
+    .hero-pattern { background-image: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 24px 24px; }
+    .dark .hero-pattern { background-image: radial-gradient(#334155 1px, transparent 1px); }
+
+    /* Typography Utilities */
+    .legal-h2 {
+      @apply text-lg font-bold text-slate-900 dark:text-white mt-10 mb-4;
+    }
+    .legal-p {
+      @apply text-slate-600 dark:text-slate-400 leading-relaxed mb-4 text-[15px];
+    }
+    .legal-ul {
+      @apply list-disc pl-6 space-y-2 mb-6 text-slate-600 dark:text-slate-400 text-[15px];
+    }
   </style>
 </head>
-<body>
+<body class="bg-surface-light text-slate-900 antialiased min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <nav class="sq-nav">
-    <a href="index.html" class="sq-logo">
-      <div class="sq-logo-mark">Q</div>
-      <div>
-        <div class="sq-logo-name">SmartQueue</div>
-        <div class="sq-logo-sub">GH Raisoni, Jalgaon</div>
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 hero-pattern opacity-40 -z-10 fixed [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
+
+  <!-- Floating Pill Navbar -->
+  <div class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+    <nav class="nav-floating w-full max-w-5xl rounded-full px-5 py-2.5 flex justify-between items-center transition-colors">
+      <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition">
+        <div class="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white">
+          <i class="ph-bold ph-queue"></i>
+        </div>
+        <div>
+          <span class="font-bold text-sm tracking-tight block leading-tight">SmartQueue</span>
+          <span class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold block">GH Raisoni</span>
+        </div>
+      </a>
+      
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="hidden sm:flex text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 px-3 py-2 transition gap-1 items-center">
+          <i class="ph-bold ph-arrow-left"></i> Home
+        </a>
+        <button onclick="document.documentElement.classList.toggle('dark')" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300">
+          <i class="ph-bold ph-moon"></i>
+        </button>
       </div>
-    </a>
-    <div class="sq-nav-actions">
-      <a href="index.html" class="sq-btn sq-btn-ghost sq-btn-sm">← Home</a>
-      <button id="theme-toggle" onclick="toggleTheme()" class="sq-btn sq-btn-ghost sq-btn-sm" style="width:36px;padding:7px;"></button>
-    </div>
-  </nav>
+    </nav>
+  </div>
 
-  <div class="legal-wrap">
-
-    <div style="margin-bottom:32px;">
-      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:8px;">Legal</p>
-      <h1 style="font-size:32px;font-weight:700;color:var(--text);margin-bottom:8px;">Cookie Policy</h1>
-      <p class="legal-date">Last updated: June 2026</p>
+  <!-- Main Legal Document -->
+  <main class="flex-1 max-w-3xl mx-auto w-full px-6 pt-32 pb-20 z-10">
+    
+    <!-- Header -->
+    <div class="mb-12 border-b border-slate-200 dark:border-slate-800 pb-8">
+      <p class="text-brand-600 dark:text-brand-400 text-xs font-bold uppercase tracking-wider mb-3">Legal</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">Cookie Policy</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">Last updated: June 2026</p>
     </div>
 
-    <div class="legal-section">
-      <p>This Cookie Policy explains what cookies and similar technologies SmartQueue uses and why. SmartQueue uses minimal cookies — only what is necessary to keep the system functional and secure.</p>
-    </div>
+    <!-- Content -->
+    <div class="prose-container">
+      <p class="legal-p">This Cookie Policy explains what cookies and similar technologies SmartQueue uses and why. SmartQueue uses minimal cookies — only what is necessary to keep the system functional and secure.</p>
 
-    <div class="legal-section">
-      <h2>1. What Are Cookies?</h2>
-      <p>Cookies are small text files stored on your device by your browser. They help websites remember information about your visit, such as your login session, so you don't have to log in every time you visit.</p>
-    </div>
+      <h2 class="legal-h2">1. What Are Cookies?</h2>
+      <p class="legal-p">Cookies are small text files stored on your device by your browser. They help websites remember information about your visit, such as your login session, so you don't have to log in every time you visit.</p>
 
-    <div class="legal-section">
-      <h2>2. Cookies We Use</h2>
-      <table class="cookie-table">
-        <tr>
-          <th>Cookie</th>
-          <th>Purpose</th>
-          <th>Duration</th>
-        </tr>
-        <tr>
-          <td>Firebase Auth Token</td>
-          <td>Keeps you logged in to your SmartQueue account</td>
-          <td>Session / 30 days</td>
-        </tr>
-        <tr>
-          <td>color-theme</td>
-          <td>Remembers your light or dark mode preference</td>
-          <td>Persistent</td>
-        </tr>
-        <tr>
-          <td>reCAPTCHA</td>
-          <td>Google reCAPTCHA uses cookies to verify you are not a bot during login and registration</td>
-          <td>Session</td>
-        </tr>
-      </table>
-    </div>
+      <h2 class="legal-h2">2. Cookies We Use</h2>
+      
+      <!-- Modern Styled Table -->
+      <div class="overflow-x-auto my-6 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white font-bold border-b border-slate-200 dark:border-slate-700">
+            <tr>
+              <th class="px-5 py-4">Cookie</th>
+              <th class="px-5 py-4">Purpose</th>
+              <th class="px-5 py-4">Duration</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 dark:divide-slate-700 text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900">
+            <tr>
+              <td class="px-5 py-4 font-semibold text-slate-900 dark:text-white">Firebase Auth Token</td>
+              <td class="px-5 py-4">Keeps you logged in to your SmartQueue account</td>
+              <td class="px-5 py-4">Session / 30 days</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 font-semibold text-slate-900 dark:text-white">color-theme</td>
+              <td class="px-5 py-4">Remembers your light or dark mode preference</td>
+              <td class="px-5 py-4">Persistent</td>
+            </tr>
+            <tr>
+              <td class="px-5 py-4 font-semibold text-slate-900 dark:text-white">reCAPTCHA</td>
+              <td class="px-5 py-4">Google reCAPTCHA uses cookies to verify you are not a bot during login and registration</td>
+              <td class="px-5 py-4">Session</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <div class="legal-section">
-      <h2>3. Third-Party Cookies</h2>
-      <p>SmartQueue uses the following third-party services that may set their own cookies:</p>
-      <ul>
+      <h2 class="legal-h2">3. Third-Party Cookies</h2>
+      <p class="legal-p">SmartQueue uses the following third-party services that may set their own cookies:</p>
+      <ul class="legal-ul">
         <li><strong>Google Firebase</strong> — for authentication and database</li>
         <li><strong>Google reCAPTCHA</strong> — for bot protection on login and registration forms</li>
       </ul>
-      <p>These services have their own privacy policies and cookie practices. We recommend reviewing Google's Privacy Policy for more information.</p>
-    </div>
+      <p class="legal-p">These services have their own privacy policies and cookie practices. We recommend reviewing Google's Privacy Policy for more information.</p>
 
-    <div class="legal-section">
-      <h2>4. We Do Not Use</h2>
-      <ul>
+      <h2 class="legal-h2">4. We Do Not Use</h2>
+      <ul class="legal-ul">
         <li>Advertising or tracking cookies</li>
         <li>Analytics cookies that track your behavior across other websites</li>
         <li>Any cookies that share your data with advertisers</li>
       </ul>
-    </div>
 
-    <div class="legal-section">
-      <h2>5. Managing Cookies</h2>
-      <p>You can control or delete cookies through your browser settings. Note that disabling essential cookies (such as Firebase Auth) will prevent you from logging in to SmartQueue.</p>
-      <p style="margin-top:8px;">Most browsers allow you to:</p>
-      <ul>
+      <h2 class="legal-h2">5. Managing Cookies</h2>
+      <p class="legal-p">You can control or delete cookies through your browser settings. Note that disabling essential cookies (such as Firebase Auth) will prevent you from logging in to SmartQueue.</p>
+      <p class="legal-p mt-2">Most browsers allow you to:</p>
+      <ul class="legal-ul">
         <li>View cookies stored on your device</li>
         <li>Delete cookies individually or all at once</li>
         <li>Block cookies from specific websites</li>
       </ul>
+
+      <h2 class="legal-h2">6. Contact</h2>
+      <p class="legal-p">If you have questions about our use of cookies, contact the SmartQueue development team through the college administration.</p>
     </div>
 
-    <div class="legal-section">
-      <h2>6. Contact</h2>
-      <p>If you have questions about our use of cookies, contact the SmartQueue development team through the college administration.</p>
+    <!-- Bottom Navigation -->
+    <div class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800 flex gap-6">
+      <a href="privacy.html" class="text-sm text-brand-600 dark:text-brand-400 font-bold hover:underline flex items-center gap-1 transition">
+        Privacy Policy <i class="ph-bold ph-arrow-right"></i>
+      </a>
+      <a href="terms.html" class="text-sm text-brand-600 dark:text-brand-400 font-bold hover:underline flex items-center gap-1 transition">
+        Terms of Service <i class="ph-bold ph-arrow-right"></i>
+      </a>
     </div>
 
-    <div style="margin-top:48px;padding-top:24px;border-top:1px solid var(--border-s);display:flex;gap:20px;">
-      <a href="privacy.html" style="font-size:13px;color:var(--accent);text-decoration:none;font-weight:600;">Privacy Policy →</a>
-      <a href="terms.html" style="font-size:13px;color:var(--accent);text-decoration:none;font-weight:600;">Terms of Service →</a>
-    </div>
-
-  </div>
+  </main>
 
 </body>
 </html>

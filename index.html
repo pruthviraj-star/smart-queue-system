@@ -3,19 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SmartQueue — Virtual Queue Utility</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <title>SmartQueue | Next-Gen Campus Queuing</title>
+  
+  <!-- Modern Font: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="theme.js"></script>
-  <link rel="manifest" href="/manifest.json"/>
-  <meta name="theme-color" content="#0071e3"/>
+  
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5', // Deep Indigo
+              900: '#312e81',
+            },
+            surface: {
+              light: '#f8fafc',
+              dark: '#0f172a', // Deep Slate
+            }
           }
         }
       }
@@ -23,480 +43,312 @@
   </script>
   <style>
     body {
-      font-feature-settings: "cv02","cv03","cv04","cv11";
-      overflow-x: hidden;
-      transition: background-color 0.4s ease, color 0.4s ease;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark body { background-color: #0f172a; color: #f8fafc; }
+    
+    /* Crisp Startup Cards */
+    .sq-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease-in-out;
+    }
+    .dark .sq-card {
+      background: #1e293b;
+      border-color: #334155;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+    .sq-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border-color: #cbd5e1;
+    }
+    .dark .sq-card:hover { border-color: #475569; }
+
+    /* Floating Navbar Magic */
+    .nav-floating {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .dark .nav-floating {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
 
-    /* ============================================
-       DARK MODE — improved contrast
-       ============================================ */
-    .dark body { background-color: #0a0a0a; }
-
-    /* Cards */
-    .sq-card-d {
-      background: #ffffff;
-      border: 1px solid rgba(0,0,0,0.04);
-      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    /* Abstract Hero Pattern */
+    .hero-pattern {
+      background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+      background-size: 24px 24px;
     }
-    .dark .sq-card-d {
-      background: #1c1c1e;
-      border-color: rgba(255,255,255,0.06);
-    }
-    .sq-card-d:hover {
-      background: #fafafa;
-      border-color: rgba(0,0,0,0.08);
-      transform: translateY(-2px);
-    }
-    .dark .sq-card-d:hover {
-      background: #2c2c2e;
-      border-color: rgba(255,255,255,0.1);
+    .dark .hero-pattern {
+      background-image: radial-gradient(#334155 1px, transparent 1px);
     }
 
-    /* Text hierarchy */
-    .sq-text-sub  { color: #6e6e73; }
-    .dark .sq-text-sub  { color: #aeaeb2; }  /* much brighter in dark */
-    .sq-text-dim  { color: #8d8d93; }
-    .dark .sq-text-dim  { color: #8d8d93; }
-    .sq-text-main { color: #1d1d1f; }
-    .dark .sq-text-main { color: #f5f5f7; }
-
-    /* Icon bg */
-    .sq-icon-bg { background: rgba(0,0,0,0.03); }
-    .dark .sq-icon-bg { background: rgba(255,255,255,0.08); }
-
-    /* Footer bg */
-    .sq-footer { background: #f5f5f7; }
-    .dark .sq-footer { background: #0a0a0a; }
-
-    /* ============================================
-       HERO — CSS animated gradient (no video, no watermark)
-       ============================================ */
-    .hero-bg {
-      position: absolute; inset: 0; z-index: 0;
-      /* Base: Crisp Gray 50 with a faint top-center radial gradient of the Primary light accent at 5% opacity */
-      background: radial-gradient(circle at top, rgba(0, 113, 227, 0.05) 0%, transparent 60%), #f8fafc;
-      transition: background 0.5s ease;
+    /* Gradient Text */
+    .text-gradient {
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-image: linear-gradient(90deg, #4f46e5, #0ea5e9);
     }
-    .dark .hero-bg {
-      /* Base: Dark mode background with a faint top-center radial gradient of the Primary dark accent at 8% opacity */
-      background: radial-gradient(circle at top, rgba(41, 151, 255, 0.08) 0%, transparent 60%), #0a0a0a;
-    }
-
-    /* ============================================
-       HERO TEXT — readable on both modes
-       ============================================ */
-    .hero-title { color: #1d1d1f; }
-    .dark .hero-title { color: #f5f5f7; }
-    .hero-sub { color: #6e6e73; }
-    .dark .hero-sub { color: #aeaeb2; }
-
-
-    /* ============================================
-       DARK MODE SPOTLIGHT CARD EFFECT
-       ============================================ */
-    .dark .sq-card-d {
-      overflow: hidden;
-    }
-    .dark .sq-card-d::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: radial-gradient(
-        600px circle at var(--x, -999px) var(--y, -999px),
-        rgba(255,255,255,0.08),
-        transparent 40%
-      );
-      z-index: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    .dark .sq-card-d::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: radial-gradient(
-        300px circle at var(--x, -999px) var(--y, -999px),
-        rgba(255,255,255,0.06),
-        transparent 40%
-      );
-      z-index: 0;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-    }
-    .dark .sq-card-d:hover::after {
-      opacity: 1;
-    }
-    /* Make card content sit above the glow layer */
-    .sq-card-d > * { position: relative; z-index: 1; }
-
-    /* ============================================
-       SCROLLBAR
-       ============================================ */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
-    .dark ::-webkit-scrollbar-thumb { background: #3a3a3c; }
-
-    /* ============================================
-       BUTTON GLOW
-       ============================================ */
-    .btn-glow {
-      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-    .btn-glow:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0,113,227,0.25);
-    }
-
-    /* ============================================
-       MOBILE SPACING FIXES
-       ============================================ */
-    @media (max-width: 640px) {
-      .hero-title { font-size: 2.8rem !important; line-height: 1.1 !important; }
-      .section-gap { margin-bottom: 48px !important; }
-      .bento-pad { padding: 28px !important; }
-      .bento-h { height: auto !important; min-height: 160px; }
-      .step-h { min-height: 200px !important; }
-      .cta-pad { padding: 40px 24px !important; }
+    .dark .text-gradient {
+      background-image: linear-gradient(90deg, #818cf8, #38bdf8);
     }
   </style>
-  
 </head>
-<body class="antialiased min-h-screen bg-[#f5f5f7] text-[#1d1d1f] dark:text-white">
+<body class="bg-surface-light text-slate-900 antialiased min-h-screen pt-24">
 
-  <!-- Navbar -->
-  <nav id="navbar" class="px-6 py-5 flex justify-between items-center fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-500">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center font-bold text-sm text-white dark:text-black flex-shrink-0">Q</div>
-      <div>
-        <h1 class="font-semibold sq-text-main leading-tight text-sm tracking-tight">SmartQueue</h1>
-        <p class="text-[9px] sq-text-dim font-semibold tracking-widest uppercase">GH Raisoni</p>
-      </div>
-    </div>
-    <div class="flex items-center gap-3 md:gap-6">
-      <a href="student-login.html" class="hidden sm:block sq-text-sub hover:text-black dark:hover:text-white text-xs font-semibold transition duration-300">
-        Student Portal
-      </a>
-      <a href="staff-login.html" class="px-4 py-2 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-xs font-semibold sq-text-main transition duration-300">
-        Staff Portal
-      </a>
-      
-      <button id="theme-toggle" onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition duration-300"></button>
-    </div>
-  </nav>
-
-  <!-- Hero -->
-  <div class="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-28">
-    <div class="hero-bg"></div>
-
-    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/[0.06] dark:border-white/[0.08] rounded-full sq-text-sub text-xs font-medium tracking-wide mb-10">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] dark:bg-[#2997ff] inline-block animate-pulse"></span>
-        System is Live — Real-time Queue Sync Active
+  <!-- Floating Pill Navbar -->
+  <div class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+    <nav class="nav-floating w-full max-w-5xl rounded-full px-6 py-3 flex justify-between items-center transition-colors">
+      <!-- Logo -->
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white">
+          <i class="ph-bold ph-queue"></i>
+        </div>
+        <span class="font-bold text-lg tracking-tight">SmartQueue</span>
       </div>
 
-      <h2 class="hero-title text-5xl sm:text-7xl md:text-8xl font-semibold tracking-tighter mb-8 leading-[1.05]">
-        The Virtual Queue.<br/>
-        <span class="text-zinc-400 dark:text-zinc-500">Redefined.</span>
-      </h2>
+      <!-- Links -->
+      <div class="hidden md:flex items-center gap-6 font-medium text-sm text-slate-600 dark:text-slate-300">
+        <a href="#how-it-works" class="hover:text-brand-600 dark:hover:text-brand-400 transition">How it Works</a>
+        <a href="staff-login.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Staff Portal</a>
+      </div>
 
-      <p class="hero-sub text-base md:text-xl max-w-2xl mx-auto mb-14 leading-relaxed tracking-tight">
-        Claim your virtual token, track your position in real-time, and get served without ever waiting in a physical line.
-      </p>
-
-      <div class="flex justify-center items-center gap-6 flex-wrap">
-        <a href="student_register.html" class="btn-glow px-8 py-4 bg-[#0071e3] text-white rounded-full font-semibold text-sm md:text-base">
-          Get Started
-        </a>
-        <a href="student-login.html" class="inline-flex items-center gap-1.5 sq-text-sub hover:text-black dark:hover:text-white text-sm md:text-base font-semibold transition duration-300 group">
-          Sign In
-          <svg class="w-4 h-4 transform group-hover:translate-x-1 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-          </svg>
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <button onclick="document.documentElement.classList.toggle('dark')" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300">
+          <i class="ph-bold ph-moon"></i>
+        </button>
+        <a href="student-login.html" class="hidden sm:flex px-5 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-sm font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition shadow-sm">
+          Student Portal
         </a>
       </div>
-    </div>
+    </nav>
   </div>
 
-  <!-- Stats Bento -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto px-5 section-gap mb-24">
-    <div class="sq-card-d rounded-[28px] bento-pad bento-h p-10 flex flex-col justify-between h-52 shadow-sm">
-      <span class="sq-text-dim text-xs font-semibold uppercase tracking-wider">Service Scope</span>
-      <span class="text-5xl font-light tracking-tighter sq-text-main">3</span>
-      <span class="sq-text-sub text-xs">Active college departments.</span>
-    </div>
-    <div class="sq-card-d rounded-[28px] bento-pad bento-h p-10 flex flex-col justify-between h-52 shadow-sm">
-      <span class="sq-text-dim text-xs font-semibold uppercase tracking-wider">Sync State</span>
-      <span class="text-5xl font-light tracking-tighter sq-text-main">Live</span>
-      <span class="sq-text-sub text-xs">Real-time bi-directional database sync.</span>
-    </div>
-    <div class="sq-card-d rounded-[28px] bento-pad bento-h p-10 flex flex-col justify-between h-52 shadow-sm">
-      <span class="sq-text-dim text-xs font-semibold uppercase tracking-wider">Intelligence</span>
-      <span class="text-5xl font-light tracking-tighter sq-text-main">AI</span>
-      <span class="sq-text-sub text-xs">Predictive wait time estimation.</span>
-    </div>
-  </div>
+  <!-- Hero Section -->
+  <section class="relative w-full max-w-6xl mx-auto px-6 pt-16 pb-24 overflow-hidden">
+    <div class="absolute inset-0 hero-pattern opacity-50 -z-10 [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
+    
+    <div class="flex flex-col lg:flex-row items-center gap-16">
+      <!-- Hero Content -->
+      <div class="w-full lg:w-1/2 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-wide border border-emerald-200 dark:border-emerald-800 mb-6">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          Campus Network Online
+        </div>
 
-  <!-- Live Counters -->
-  <div class="max-w-5xl mx-auto px-5 section-gap mb-24">
-    <div class="mb-12 text-center">
-      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.05] text-[10px] font-semibold text-[#0071e3] dark:text-[#2997ff] uppercase tracking-widest border border-black/[0.04] dark:border-white/[0.06] mb-4">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] dark:bg-[#2997ff] inline-block animate-ping"></span> Live Status
-      </span>
-      <h3 class="text-3xl md:text-5xl font-semibold tracking-tight sq-text-main">Current Counters</h3>
-    </div>
-    <div id="live-counters" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-      <div class="sq-card-d rounded-[28px] p-10 h-56 animate-pulse"></div>
-      <div class="sq-card-d rounded-[28px] p-10 h-56 animate-pulse"></div>
-      <div class="sq-card-d rounded-[28px] p-10 h-56 animate-pulse"></div>
-    </div>
-  </div>
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
+          Skip the line.<br />
+          <span class="text-gradient">Own your time.</span>
+        </h1>
+        
+        <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+          The intelligent virtual queuing system for modern campuses. Secure your spot from anywhere and walk up exactly when you're called.
+        </p>
 
-  <!-- How It Works -->
-  <div class="max-w-5xl mx-auto px-5 section-gap mb-24">
-    <div class="mb-14 text-center">
-      <h3 class="text-3xl md:text-5xl font-semibold tracking-tight sq-text-main mb-4">How It Works</h3>
-      <p class="sq-text-sub text-base max-w-md mx-auto">Four deliberate steps to save hours of standing in line.</p>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-      <div class="sq-card-d rounded-[28px] bento-pad step-h p-10 flex flex-col justify-between min-h-[240px] shadow-sm">
-        <div class="w-10 h-10 sq-icon-bg rounded-xl flex items-center justify-center text-lg mb-6">🔐</div>
-        <div>
-          <span class="text-[#0071e3] dark:text-[#2997ff] text-xs font-semibold uppercase tracking-wider mb-2 block">Step 01</span>
-          <h4 class="text-base font-semibold sq-text-main mb-2">Instant Registry</h4>
-          <p class="sq-text-sub text-sm leading-relaxed">Securely log in using your authenticated student profile.</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+          <a href="student_register.html" class="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold text-base transition shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2">
+            Claim Your Token <i class="ph-bold ph-arrow-right"></i>
+          </a>
+          <a href="#live-status" class="w-full sm:w-auto px-8 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-brand-600 dark:hover:border-brand-400 rounded-xl font-bold text-base transition flex items-center justify-center gap-2">
+            View Live Queues
+          </a>
         </div>
       </div>
-      <div class="sq-card-d rounded-[28px] bento-pad step-h p-10 flex flex-col justify-between min-h-[240px] shadow-sm">
-        <div class="w-10 h-10 sq-icon-bg rounded-xl flex items-center justify-center text-lg mb-6">🎫</div>
-        <div>
-          <span class="text-[#0071e3] dark:text-[#2997ff] text-xs font-semibold uppercase tracking-wider mb-2 block">Step 02</span>
-          <h4 class="text-base font-semibold sq-text-main mb-2">Claim Virtual Token</h4>
-          <p class="sq-text-sub text-sm leading-relaxed">Select your target department and claim your sequential queue token instantly.</p>
-        </div>
-      </div>
-      <div class="sq-card-d rounded-[28px] bento-pad step-h p-10 flex flex-col justify-between min-h-[240px] shadow-sm">
-        <div class="w-10 h-10 sq-icon-bg rounded-xl flex items-center justify-center text-lg mb-6">📍</div>
-        <div>
-          <span class="text-[#0071e3] dark:text-[#2997ff] text-xs font-semibold uppercase tracking-wider mb-2 block">Step 03</span>
-          <h4 class="text-base font-semibold sq-text-main mb-2">Wait Anywhere</h4>
-          <p class="sq-text-sub text-sm leading-relaxed">Track queue position changes dynamically without needing to stay in the building.</p>
-        </div>
-      </div>
-      <div class="sq-card-d rounded-[28px] bento-pad step-h p-10 flex flex-col justify-between min-h-[240px] shadow-sm">
-        <div class="w-10 h-10 sq-icon-bg rounded-xl flex items-center justify-center text-lg mb-6">✅</div>
-        <div>
-          <span class="text-[#0071e3] dark:text-[#2997ff] text-xs font-semibold uppercase tracking-wider mb-2 block">Step 04</span>
-          <h4 class="text-base font-semibold sq-text-main mb-2">Seamless Service</h4>
-          <p class="sq-text-sub text-sm leading-relaxed">Head directly to the service counter when your token is called.</p>
-        </div>
+
+      <!-- Hero Visual (Screenshot) -->
+      <div class="w-full lg:w-1/2 relative">
+        <div class="absolute inset-0 bg-brand-500 rounded-3xl blur-3xl opacity-20 dark:opacity-30"></div>
+        <img src="path/to/your/dashboard-screenshot.png" alt="SmartQueue Dashboard Interface" class="relative z-10 w-full rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl transform lg:-rotate-2 hover:rotate-0 transition duration-500" />
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- CTA -->
-  <div class="max-w-5xl mx-auto px-5 section-gap mb-24">
-    <div class="sq-card-d rounded-[36px] cta-pad p-16 md:p-24 text-center relative overflow-hidden shadow-sm">
-      <div class="absolute inset-0 bg-gradient-to-b from-[#0071e3]/[0.02] dark:from-[#2997ff]/[0.03] to-transparent pointer-events-none"></div>
-      <h3 class="text-3xl md:text-5xl font-semibold tracking-tight sq-text-main mb-4 leading-tight">Ready to Skip the Line?</h3>
-      <p class="sq-text-sub text-sm md:text-base max-w-lg mx-auto mb-10">
-        Join the smart student registry. Eliminate physical queue times.
-      </p>
-      <a href="student_register.html" class="btn-glow inline-block px-8 py-4 bg-[#0071e3] text-white rounded-full font-semibold text-sm md:text-base">
-        Create Your Account
-      </a>
+  <!-- Live Status Cards -->
+  <section id="live-status" class="py-20 bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+        <div>
+          <h2 class="text-3xl font-bold mb-2">Live Department Status</h2>
+          <p class="text-slate-600 dark:text-slate-400">Real-time sync directly from the campus database.</p>
+        </div>
+      </div>
+
+      <div id="live-counters" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Injected by JS -->
+      </div>
     </div>
-  </div>
+  </section>
 
-<!-- Footer -->
-  <footer class="sq-footer border-t border-black/[0.05] dark:border-white/[0.05]">
-    <div class="max-w-5xl mx-auto px-5 pt-16 pb-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+  <!-- Connected Timeline (How It Works) -->
+  <section id="how-it-works" class="py-24">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
+        <p class="text-slate-600 dark:text-slate-400">Four simple steps to a frictionless experience.</p>
+      </div>
 
-      <div>
-        <div class="flex items-center gap-3 mb-5">
-          <div class="w-8 h-8 rounded-lg bg-black dark:bg-white flex items-center justify-center font-bold text-sm text-white dark:text-black">
-            Q
+      <div class="relative">
+        <!-- Vertical Line connecting steps -->
+        <div class="absolute left-6 md:left-12 top-10 bottom-10 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
+
+        <div class="space-y-12">
+          <!-- Step 1 -->
+          <div class="relative pl-20 md:pl-32">
+            <div class="absolute left-0 md:left-6 top-1 w-12 h-12 bg-white dark:bg-slate-800 border-4 border-slate-100 dark:border-slate-900 shadow-md rounded-full flex items-center justify-center font-bold text-brand-600 z-10 text-lg">1</div>
+            <div class="sq-card p-6 md:p-8">
+              <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 text-brand-600 rounded-lg flex items-center justify-center mb-4">
+                <i class="ph-fill ph-user-circle text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Authenticate</h3>
+              <p class="text-slate-600 dark:text-slate-400">Log in securely using your student credentials to access the central dashboard.</p>
+            </div>
           </div>
-          <span class="font-bold sq-text-main text-base tracking-tight">SmartQueue</span>
+
+          <!-- Step 2 -->
+          <div class="relative pl-20 md:pl-32">
+            <div class="absolute left-0 md:left-6 top-1 w-12 h-12 bg-white dark:bg-slate-800 border-4 border-slate-100 dark:border-slate-900 shadow-md rounded-full flex items-center justify-center font-bold text-brand-600 z-10 text-lg">2</div>
+            <div class="sq-card p-6 md:p-8 border-brand-600 dark:border-brand-500"> <!-- Highlighted Card -->
+              <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 text-brand-600 rounded-lg flex items-center justify-center mb-4">
+                <i class="ph-fill ph-ticket text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Generate Token</h3>
+              <p class="text-slate-600 dark:text-slate-400">Select your required department (Fees, Admissions, etc.) to instantly secure your digital queue ticket.</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="relative pl-20 md:pl-32">
+            <div class="absolute left-0 md:left-6 top-1 w-12 h-12 bg-white dark:bg-slate-800 border-4 border-slate-100 dark:border-slate-900 shadow-md rounded-full flex items-center justify-center font-bold text-brand-600 z-10 text-lg">3</div>
+            <div class="sq-card p-6 md:p-8">
+              <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-500/10 text-brand-600 rounded-lg flex items-center justify-center mb-4">
+                <i class="ph-fill ph-bell-ringing text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2">Monitor Progress</h3>
+              <p class="text-slate-600 dark:text-slate-400">Watch the live counter move. You'll receive a browser notification when you are 3rd in line.</p>
+            </div>
+          </div>
         </div>
-        <p class="sq-text-sub text-sm leading-relaxed max-w-xs">
-            Virtual Queue System For college management.
+      </div>
+    </div>
+  </section>
+
+  <!-- Stark Dark Footer -->
+  <footer class="bg-slate-950 text-slate-300 py-16 border-t border-slate-900">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <!-- Brand -->
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-2 mb-6">
+            <div class="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white">
+              <i class="ph-bold ph-queue"></i>
+            </div>
+            <span class="font-bold text-xl text-white tracking-tight">SmartQueue</span>
+          </div>
+          <p class="text-slate-400 mb-6 max-w-sm">
+            Engineered for modern educational institutions. Eliminating physical lines to give students their time back.
           </p>
-          <div style="margin-top:20px;">
-            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style="background:rgba(52,199,89,0.08);color:#34c759;border:1px solid rgba(52,199,89,0.2);">
-              <span style="width:6px;height:6px;border-radius:50%;background:#34c759;display:inline-block;animation:livePulse 2s infinite;"></span>
-              System Live
-            </span>
-          </div>
-      </div>
+          <a href="student_register.html" class="inline-flex items-center gap-2 text-white font-bold hover:text-brand-400 transition">
+            Create an account <i class="ph-bold ph-arrow-right"></i>
+          </a>
+        </div>
 
-      <div>
-        <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">
-          Navigation
-        </h4>
-        <ul class="space-y-3">
-          <li><a href="index.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Home</a></li>
-          <li><a href="student_register.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Create Account</a></li>
-          <li><a href="student-login.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Student Portal</a></li>
-          <li><a href="staff-login.html" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">Staff Portal</a></li>
-        </ul>
-      </div>
+        <!-- Links -->
+        <div>
+          <h4 class="text-white font-bold mb-6 tracking-wide">Platform</h4>
+          <ul class="space-y-4 font-medium text-sm">
+            <li><a href="student-login.html" class="hover:text-white transition">Student Portal</a></li>
+            <li><a href="staff-login.html" class="hover:text-white transition">Staff Dashboard</a></li>
+            <li><a href="admin-login.html" class="hover:text-white transition">Admin Analytics</a></li>
+          </ul>
+        </div>
 
-      <div>
-        <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">
-          Institution
-        </h4>
-        <ul class="space-y-3">
-          <li>
-            <a href="https://ghrcemj.raisoni.net/" target="_blank"
-              class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">
-              Official Portal
-            </a>
-          </li>
-          <li>
-            <a href="mailto:info@raisoni.net"
-              class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">
-              Institutional Mail
-            </a>
-          </li>
-          <li>
-            <a href="tel:+9102572264881"
-              class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300">
-              Support Contact
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <h4 class="sq-text-main text-xs font-semibold uppercase tracking-wider mb-5">
-          More
-        </h4>
-        <ul class="space-y-3">
-          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300"></a></li>
-          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300"></a></li>
-          <li><a href="#" class="sq-text-sub hover:text-black dark:hover:text-white text-sm transition duration-300"></a></li>
-        </ul>
-      </div>
-
-    </div>
-
-    <div class="border-t border-black/[0.05] dark:border-white/[0.05] pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs sq-text-dim">
-        <p>© 2026 SmartQueue. All rights reserved.</p>
-        <div class="flex items-center gap-5">
-          <a href="about.html" class="hover:text-black dark:hover:text-white transition duration-300">About</a>
-          <a href="privacy.html" class="hover:text-black dark:hover:text-white transition duration-300">Privacy</a>
-          <a href="terms.html" class="hover:text-black dark:hover:text-white transition duration-300">Terms</a>
-          <a href="cookies.html" class="hover:text-black dark:hover:text-white transition duration-300">Cookies</a>
+        <!-- Legal -->
+        <div>
+          <h4 class="text-white font-bold mb-6 tracking-wide">Institution</h4>
+          <ul class="space-y-4 font-medium text-sm">
+            <li><a href="https://ghrcemj.raisoni.net/" target="_blank" class="hover:text-white transition">GH Raisoni College</a></li>
+            <li><a href="#" class="hover:text-white transition">Support Center</a></li>
+            <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+          </ul>
         </div>
       </div>
-</footer>
-  <script type="module">
-    import { auth, db } from './firebase-config.js';
-    import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+<div class="border-t border-slate-800 pt-8 flex flex-col lg:flex-row justify-between items-center gap-6 text-sm text-slate-500">
+        
+        <!-- Copyright -->
+        <p>&copy; 2026 SmartQueue Systems.</p>
+        
+        <!-- Legal & About Links -->
+        <div class="flex flex-wrap justify-center items-center gap-6 font-medium">
+          <a href="about.html" class="hover:text-slate-300 transition">About</a>
+          <a href="privacy.html" class="hover:text-slate-300 transition">Privacy</a>
+          <a href="terms.html" class="hover:text-slate-300 transition">Terms</a>
+          <a href="cookies.html" class="hover:text-slate-300 transition">Cookies</a>
+        </div>
 
-    // Navbar scroll effect
-    window.addEventListener('scroll', () => {
-      const nav = document.getElementById('navbar');
-      const isDark = document.documentElement.classList.contains('dark');
-      if (window.scrollY > 50) {
-        nav.style.background = isDark ? 'rgba(10,10,10,0.85)' : 'rgba(245,245,247,0.85)';
-        nav.style.backdropFilter = 'blur(20px)';
-        nav.style.webkitBackdropFilter = 'blur(20px)';
-        nav.style.borderBottom = isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.05)';
-      } else {
-        nav.style.background = 'transparent';
-        nav.style.backdropFilter = 'none';
-        nav.style.webkitBackdropFilter = 'none';
-        nav.style.borderBottom = 'none';
-      }
-    });
+        <!-- System Status -->
+        <div class="flex items-center gap-2 bg-slate-900 rounded-full px-4 py-2 border border-slate-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>All systems operational</span>
+        </div>
+        
+      </div>
+      
+    </div>
+  </footer>
 
-    // Live counters
-    const liveCounters = document.getElementById('live-counters');
-    let unsubscribeCounters = null;
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        signInWithEmailAndPassword(auth, 'guest@smartqueue.com', 'guest123').catch(() => {});
-      } else {
-        if (!unsubscribeCounters) {
-          unsubscribeCounters = onSnapshot(collection(db, 'queues'), (snapshot) => {
-            liveCounters.innerHTML = '';
-            const icons = { fees_counter: '💰', admissions: '📋', scholarship: '🎓' };
-            snapshot.forEach((queueDoc) => {
-              const q = queueDoc.data();
-              const icon = icons[queueDoc.id] || '🏢';
-              const waiting = Math.max(0, (q.lastToken ?? 0) - (q.currentCounter ?? 0));
-              const waitText = waiting === 0 ? 'No wait time' : `${waiting} waiting`;
-              const card = document.createElement('div');
-              card.className = 'sq-card-d rounded-[28px] p-8 flex flex-col justify-between h-56 shadow-sm';
-              card.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
-                  <div class="w-10 h-10 sq-icon-bg rounded-xl flex items-center justify-center text-lg">${icon}</div>
-                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.05] text-[10px] font-semibold text-[#0071e3] dark:text-[#2997ff] uppercase tracking-widest border border-black/[0.04] dark:border-white/[0.06]">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#0071e3] dark:bg-[#2997ff] inline-block animate-pulse"></span> Live
-                  </span>
-                </div>
-                <div>
-                  <h4 class="sq-text-dim text-xs font-semibold uppercase tracking-wider mb-1">${q.deptName}</h4>
-                  <p class="text-4xl font-light tracking-tighter sq-text-main">${waiting}</p>
-                  <p class="text-[#0071e3] dark:text-[#2997ff] text-xs mt-1 font-medium">${waitText}</p>
-                </div>
-                <div class="border-t border-black/[0.04] dark:border-white/[0.06] pt-3 flex justify-between items-center">
-                  <span class="sq-text-dim text-xs uppercase tracking-wider font-semibold">Serving Now</span>
-                  <span class="sq-text-main font-medium text-sm">#${q.currentCounter ?? 0}</span>
-                </div>`;
-              liveCounters.appendChild(card);
-            });
-            // Re-init spotlight for newly added cards
-            document.dispatchEvent(new Event('countersLoaded'));
-          }, () => {});
-        }
-      }
-    });
-  </script>
-
-
+  <!-- Dummy JS for Live Counters -->
   <script>
-    // Spotlight mouse tracking — dark mode only
-    function initSpotlight() {
-      const isDark = document.documentElement.classList.contains('dark');
-      if (!isDark) return;
+    // Emulating Firebase Snapshot with Phosphor Icons
+    const liveCounters = document.getElementById('live-counters');
+    const dummyData = [
+      { id: 'fees_counter', deptName: 'Fees Counter', currentCounter: 15, lastToken: 18 },
+      { id: 'admissions', deptName: 'Admissions', currentCounter: 42, lastToken: 42 },
+      { id: 'scholarship', deptName: 'Scholarship Section', currentCounter: 8, lastToken: 10 }
+    ];
+    
+    // Map database IDs to Phosphor icon classes
+    const icons = { 
+      fees_counter: 'ph-wallet', 
+      admissions: 'ph-file-text', 
+      scholarship: 'ph-graduation-cap' 
+    };
 
-      const cards = document.querySelectorAll('.sq-card-d');
-      cards.forEach(card => {
-        card.addEventListener('pointermove', (e) => {
-          const rect = card.getBoundingClientRect();
-          card.style.setProperty('--x', (e.clientX - rect.left) + 'px');
-          card.style.setProperty('--y', (e.clientY - rect.top) + 'px');
-        });
-        card.addEventListener('pointerleave', () => {
-          card.style.setProperty('--x', '-999px');
-          card.style.setProperty('--y', '-999px');
-        });
-      });
-    }
-
-    // Run on load and whenever theme changes
-    window.addEventListener('DOMContentLoaded', () => {
-      initSpotlight();
-
-      // Re-run when dark class toggled on html element
-      const observer = new MutationObserver(() => initSpotlight());
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    dummyData.forEach((q) => {
+      const iconClass = icons[q.id] || 'ph-buildings';
+      const waiting = Math.max(0, (q.lastToken ?? 0) - (q.currentCounter ?? 0));
+      const waitText = waiting === 0 ? 'No Wait' : `${waiting} waiting`;
+      const waitBg = waiting === 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
+      
+      const card = document.createElement('div');
+      card.className = 'sq-card p-6 flex flex-col justify-between h-48';
+      card.innerHTML = `
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl text-slate-700 dark:text-slate-300">
+             <i class="ph-fill ${iconClass}"></i>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${waitBg}">
+            ${waitText}
+          </span>
+        </div>
+        <div>
+          <h4 class="text-lg font-bold mb-1 truncate">${q.deptName}</h4>
+          <p class="text-slate-500 dark:text-slate-400 text-sm">Serving Token <strong class="text-brand-600 dark:text-brand-400 font-bold">#${q.currentCounter}</strong></p>
+        </div>
+      `;
+      liveCounters.appendChild(card);
     });
-
-    // Re-init after live counters load (dynamically added cards)
-    const origOnSnapshot = window.__origOnSnapshot;
-    document.addEventListener('countersLoaded', () => initSpotlight());
   </script>
-
 </body>
 </html>

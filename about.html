@@ -1,287 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>About | SmartQueue</title>
-  <link rel="stylesheet" href="shared.css"/>
-  <script src="theme.js"></script>
+  
+  <!-- Modern Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Phosphor Icons & Tailwind -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          colors: {
+            brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 900: '#312e81' },
+            surface: { light: '#f8fafc', dark: '#0f172a' }
+          }
+        }
+      }
+    }
+  </script>
   <style>
-    .tech-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 12px;
-    }
-    .tech-pill {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 8px; padding: 16px 12px;
-      background: var(--bg); border: 1px solid var(--border-s);
-      border-radius: 16px; text-align: center;
-      transition: all 0.3s;
-    }
-    .tech-pill:hover {
-      border-color: var(--border);
-      transform: translateY(-2px);
-      background: var(--bg-hover);
-    }
-    .tech-icon { font-size: 24px; }
-    .tech-name { font-size: 11px; font-weight: 600; color: var(--text-sub); }
+    body { transition: background-color 0.3s, color 0.3s; }
+    .dark body { background-color: #0f172a; color: #f8fafc; }
 
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
+    /* Startup Cards */
+    .sq-card {
+      background: white; border: 1px solid #e2e8f0; border-radius: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      padding: 32px;
     }
+    .dark .sq-card { background: #1e293b; border-color: #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+
+    /* Floating Navbar */
+    .nav-floating {
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .dark .nav-floating { background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(255,255,255,0.1); }
+
+    /* Abstract Hero Pattern */
+    .hero-pattern { background-image: radial-gradient(#e2e8f0 1px, transparent 1px); background-size: 24px 24px; }
+    .dark .hero-pattern { background-image: radial-gradient(#334155 1px, transparent 1px); }
+
     .skill-tag {
-      display: inline-flex; align-items: center;
-      padding: 4px 10px; border-radius: 999px;
-      font-size: 11px; font-weight: 600;
-      background: var(--bg); border: 1px solid var(--border-s);
-      color: var(--text-sub);
-    }
-    .feature-row {
-      display: flex; align-items: flex-start; gap: 14px;
-      padding: 16px 0; border-bottom: 1px solid var(--border-s);
-    }
-    .feature-row:last-child { border-bottom: none; }
-    .feature-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: var(--bg); border: 1px solid var(--border-s);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; flex-shrink: 0;
+      @apply inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300;
     }
   </style>
 </head>
-<body>
+<body class="bg-surface-light text-slate-900 antialiased min-h-screen flex flex-col relative overflow-x-hidden">
 
-  <nav class="sq-nav">
-    <a href="index.html" class="sq-logo">
-      <div class="sq-logo-mark">Q</div>
-      <div>
-        <div class="sq-logo-name">SmartQueue</div>
-        <div class="sq-logo-sub">GH Raisoni, Jalgaon</div>
+  <!-- Background Pattern -->
+  <div class="absolute inset-0 hero-pattern opacity-60 -z-10 fixed [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
+
+  <!-- Floating Pill Navbar -->
+  <div class="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
+    <nav class="nav-floating w-full max-w-5xl rounded-full px-5 py-2.5 flex justify-between items-center transition-colors">
+      <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition">
+        <div class="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white">
+          <i class="ph-bold ph-queue"></i>
+        </div>
+        <div>
+          <span class="font-bold text-sm tracking-tight block leading-tight">SmartQueue</span>
+          <span class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold block">GH Raisoni</span>
+        </div>
+      </a>
+      
+      <div class="flex items-center gap-2">
+        <a href="student-login.html" class="hidden sm:flex text-xs font-bold bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/50 rounded-full px-4 py-2 transition items-center gap-1">
+          Student Login <i class="ph-bold ph-arrow-right"></i>
+        </a>
+        <button onclick="document.documentElement.classList.toggle('dark')" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300">
+          <i class="ph-bold ph-moon"></i>
+        </button>
       </div>
-    </a>
-    <div class="sq-nav-actions">
-      <a href="student-login.html" class="sq-btn sq-btn-ghost sq-btn-sm">Student Login</a>
-      <button id="theme-toggle" onclick="toggleTheme()" class="sq-btn sq-btn-ghost sq-btn-sm" style="width:36px;padding:7px;"></button>
-    </div>
-  </nav>
+    </nav>
+  </div>
 
-  <div style="max-width:760px;margin:0 auto;padding:60px 20px;">
-
+  <!-- Main Content -->
+  <main class="flex-1 max-w-4xl mx-auto w-full px-6 pt-32 pb-20 z-10">
+    
     <!-- Header -->
-    <div class="sq-fade-in" style="margin-bottom:56px;">
-      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:12px;">BCA Final Year Project — 2025–26</p>
-      <h1 style="font-size:40px;font-weight:700;color:var(--text);line-height:1.1;margin-bottom:16px;">About SmartQueue</h1>
-      <p style="font-size:16px;color:var(--text-sub);line-height:1.7;max-width:580px;">
+    <div class="mb-12 text-center md:text-left">
+      <p class="text-brand-600 dark:text-brand-400 text-[11px] font-bold uppercase tracking-[0.1em] mb-3">BCA Final Year Project — 2025–26</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">About SmartQueue</h1>
+      <p class="text-base md:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
         SmartQueue is a virtual queue management system built for GH Raisoni College of Engineering and Management, Jalgaon. It eliminates physical waiting lines by letting students claim virtual tokens, track their position in real-time, and get notified when their turn arrives.
       </p>
     </div>
 
-    <!-- Why we built it -->
-    <div class="sq-card sq-fade-in" style="margin-bottom:16px;">
-      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:12px;">The Problem</p>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:12px;">Why SmartQueue?</h2>
-      <p style="font-size:14px;color:var(--text-sub);line-height:1.7;">
+    <!-- The Problem -->
+    <div class="sq-card mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-500/10 text-orange-500 flex items-center justify-center text-xl">
+          <i class="ph-fill ph-lightbulb"></i>
+        </div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Why SmartQueue?</h2>
+      </div>
+      <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-[15px]">
         Every semester, students spend hours standing in queues at the Fees Counter, Admissions Office, and Scholarship Section. There's no way to know how long the wait will be or how many people are ahead. SmartQueue solves this — students can join a queue from anywhere on campus, monitor their position live, and only head to the counter when their token is called.
       </p>
     </div>
 
-    <!-- Features -->
-    <div class="sq-card sq-fade-in" style="margin-bottom:16px;">
-      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:20px;">What it does</p>
-      <div>
-        <div class="feature-row">
-          <div class="feature-icon">🎫</div>
+    <!-- Features (Emojis Replaced with Phosphor) -->
+    <div class="sq-card mb-6">
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6">What it does</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        
+        <div class="flex gap-4">
+          <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 border border-brand-100 dark:border-brand-800/50 flex items-center justify-center text-2xl shrink-0">
+            <i class="ph-fill ph-ticket"></i>
+          </div>
           <div>
-            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Virtual Token System</div>
-            <div style="font-size:13px;color:var(--text-sub);line-height:1.6;">Students get a unique sequential token number when they join a queue — no physical slips needed.</div>
+            <h3 class="font-bold text-slate-900 dark:text-white mb-1">Virtual Token System</h3>
+            <p class="text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed">Students get a unique sequential token number when they join a queue — no physical slips needed.</p>
           </div>
         </div>
-        <div class="feature-row">
-          <div class="feature-icon">📡</div>
+
+        <div class="flex gap-4">
+          <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 border border-brand-100 dark:border-brand-800/50 flex items-center justify-center text-2xl shrink-0">
+            <i class="ph-fill ph-broadcast"></i>
+          </div>
           <div>
-            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Real-time Position Tracking</div>
-            <div style="font-size:13px;color:var(--text-sub);line-height:1.6;">Queue position updates instantly as staff calls the next token — powered by Firebase Firestore live sync.</div>
+            <h3 class="font-bold text-slate-900 dark:text-white mb-1">Real-time Position Tracking</h3>
+            <p class="text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed">Queue position updates instantly as staff calls the next token — powered by Firebase Firestore live sync.</p>
           </div>
         </div>
-        <div class="feature-row">
-          <div class="feature-icon">🔔</div>
+
+        <div class="flex gap-4">
+          <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 border border-brand-100 dark:border-brand-800/50 flex items-center justify-center text-2xl shrink-0">
+            <i class="ph-fill ph-bell-ringing"></i>
+          </div>
           <div>
-            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Push Notifications</div>
-            <div style="font-size:13px;color:var(--text-sub);line-height:1.6;">Students receive browser push notifications when they are 3 positions away and when it's their turn — even if the app is in the background.</div>
+            <h3 class="font-bold text-slate-900 dark:text-white mb-1">Push Notifications</h3>
+            <p class="text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed">Students receive browser push notifications when they are 3 positions away and when it's their turn — even if the app is in the background.</p>
           </div>
         </div>
-        <div class="feature-row">
-          <div class="feature-icon">⚙️</div>
+
+        <div class="flex gap-4">
+          <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 border border-brand-100 dark:border-brand-800/50 flex items-center justify-center text-2xl shrink-0">
+            <i class="ph-fill ph-desktop"></i>
+          </div>
           <div>
-            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Staff Dashboard</div>
-            <div style="font-size:13px;color:var(--text-sub);line-height:1.6;">Staff can call next token, mark service complete, open/close the queue, and reset it at end of day.</div>
+            <h3 class="font-bold text-slate-900 dark:text-white mb-1">Staff Dashboard</h3>
+            <p class="text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed">Staff can call next token, mark service complete, open/close the queue, and reset it at end of day.</p>
           </div>
         </div>
-        <div class="feature-row">
-          <div class="feature-icon">👑</div>
+
+        <div class="flex gap-4">
+          <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 border border-brand-100 dark:border-brand-800/50 flex items-center justify-center text-2xl shrink-0">
+            <i class="ph-fill ph-crown"></i>
+          </div>
           <div>
-            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Admin Analytics</div>
-            <div style="font-size:13px;color:var(--text-sub);line-height:1.6;">Admin dashboard shows today's token stats, students served, average service time per department, and queue status overview.</div>
+            <h3 class="font-bold text-slate-900 dark:text-white mb-1">Admin Analytics</h3>
+            <p class="text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed">Admin dashboard shows today's token stats, students served, average service time per department, and queue status overview.</p>
           </div>
         </div>
-        <div class="feature-row">
-          <div class="feature-icon">🤖</div>
+
+        <div class="flex gap-4">
+          <div class="w-12 h-12 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 border border-brand-100 dark:border-brand-800/50 flex items-center justify-center text-2xl shrink-0">
+            <i class="ph-fill ph-robot"></i>
+          </div>
           <div>
-            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">AI Wait Time Prediction</div>
-            <div style="font-size:13px;color:var(--text-sub);line-height:1.6;">Estimated wait time is calculated using real service history data from completed tokens — not a static guess.</div>
+            <h3 class="font-bold text-slate-900 dark:text-white mb-1">AI Wait Time Prediction</h3>
+            <p class="text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed">Estimated wait time is calculated using real service history data from completed tokens — not a static guess.</p>
           </div>
         </div>
+
       </div>
     </div>
 
     <!-- Tech Stack -->
-    <div class="sq-card sq-fade-in" style="margin-bottom:16px;">
-      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:20px;">Built with</p>
-      <div class="tech-grid">
-        <div class="tech-pill">
-          <span class="tech-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--text-sub);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 12s-1.5-2-1.5-4a5.5 5.5 0 0 0-11 0c0 2 1.5 4 1.5 4m11 0s1.5 2 1.5 4a5.5 5.5 0 0 1-11 0c0-2 1.5-4 1.5-4"/><path d="M12 3v1"/></svg>
-          </span>
-          <span class="tech-name">Firebase</span>
-        </div>
-        <div class="tech-pill">
-          <span class="tech-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--text-sub);">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L24 22H0L12 1Z"/></svg>
-          </span>
-          <span class="tech-name">Vercel</span>
-        </div>
-        <div class="tech-pill">
-          <span class="tech-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--text-sub);">
-            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg>
-          </span>
-          <span class="tech-name">GitHub</span>
-        </div>
-        <div class="tech-pill">
-          <span class="tech-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--text-sub);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </span>
-          <span class="tech-name">HTML & CSS</span>
-        </div>
-        <div class="tech-pill">
-          <span class="tech-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--text-sub);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-          </span>
-          <span class="tech-name">JavaScript</span>
-        </div>
-        <div class="tech-pill">
-          <span class="tech-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--text-sub);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-          </span>
-          <span class="tech-name">Tailwind CSS</span>
-        </div>
-        <div class="tech-pill">
-          <span class="tech-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--text-sub);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-          </span>
-          <span class="tech-name">VS Code</span>
-        </div>
-        <div class="tech-pill">
-          <span class="tech-icon" style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; color:var(--text-sub);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-          </span>
-          <span class="tech-name">Firestore</span>
-        </div>
+    <div class="sq-card mb-6">
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Built with</h2>
+      <div class="flex flex-wrap gap-3">
+        <span class="skill-tag border-brand-200 dark:border-brand-800/50 bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-300"><i class="ph-bold ph-fire mr-1.5"></i> Firebase</span>
+        <span class="skill-tag"><i class="ph-bold ph-database mr-1.5"></i> Firestore</span>
+        <span class="skill-tag"><i class="ph-bold ph-code mr-1.5"></i> JavaScript</span>
+        <span class="skill-tag"><i class="ph-bold ph-file-code mr-1.5"></i> HTML & CSS</span>
+        <span class="skill-tag"><i class="ph-bold ph-paint-brush mr-1.5"></i> Tailwind CSS</span>
+        <span class="skill-tag"><i class="ph-bold ph-globe mr-1.5"></i> Vercel</span>
+        <span class="skill-tag"><i class="ph-bold ph-github-logo mr-1.5"></i> GitHub</span>
       </div>
     </div>
 
-    <!-- Team -->
-    <div class="sq-fade-in" style="margin-bottom:16px;">
-      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:20px;">The Team</p>
-      <div class="team-grid">
+    <!-- The Team -->
+    <div class="mb-6">
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 pl-2">The Team</h2>
+      <div class="grid md:grid-cols-2 gap-6">
 
         <!-- Pruthviraj -->
-        <div class="sq-card">
-          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-            <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#0071e3,#5856d6);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:white;flex-shrink:0;">P</div>
+        <div class="sq-card !p-6 flex flex-col h-full">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-2xl font-bold text-white shrink-0 shadow-lg shadow-indigo-500/30">P</div>
             <div>
-              <div style="font-size:15px;font-weight:700;color:var(--text);">Pruthviraj Nikam</div>
-              <div style="font-size:11px;color:var(--accent);font-weight:600;margin-top:2px;">Frontend & Backend Developer</div>
+              <div class="text-lg font-bold text-slate-900 dark:text-white">Pruthviraj Nikam</div>
+              <div class="text-[12px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider mt-1">Frontend & Backend Developer</div>
             </div>
           </div>
-          <p style="font-size:13px;color:var(--text-sub);line-height:1.6;margin-bottom:14px;">
+          <p class="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed mb-6 flex-1">
             Sole developer managing the complete frontend UI, Firebase integration, real-time logic, deployment pipeline, and all feature development.
           </p>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">
-            <span class="skill-tag">Firebase</span>
-            <span class="skill-tag">JavaScript</span>
-            <span class="skill-tag">Tailwind CSS</span>
-            <span class="skill-tag">Vercel</span>
-            <span class="skill-tag">Git</span>
-            <span class="skill-tag">UI Design</span>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="skill-tag !text-[10px] !px-2.5 !py-1">Firebase</span>
+            <span class="skill-tag !text-[10px] !px-2.5 !py-1">JavaScript</span>
+            <span class="skill-tag !text-[10px] !px-2.5 !py-1">Tailwind CSS</span>
+            <span class="skill-tag !text-[10px] !px-2.5 !py-1">Vercel</span>
           </div>
-          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-s);">
-        <div style="display:flex;gap:14px;flex-wrap:wrap;">
-            <a href="https://github.com/pruthviraj-star" target="_blank" style="font-size:12px;color:var(--accent);font-weight:600;text-decoration:none;">GitHub →</a>
-            <a href="#" target="_blank" style="font-size:12px;color:var(--text-sub);font-weight:600;text-decoration:none;">LinkedIn → (coming soon)</a>
-            <a href="#" style="font-size:12px;color:var(--text-sub);font-weight:600;text-decoration:none;">Portfolio → (coming soon)</a>
-          </div>          </div>
+          <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-4">
+            <a href="https://github.com/pruthviraj-star" target="_blank" class="text-[12px] font-bold text-slate-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400 transition flex items-center gap-1"><i class="ph-bold ph-github-logo"></i> GitHub</a>
+            <span class="text-[12px] font-bold text-slate-400 dark:text-slate-600 cursor-not-allowed flex items-center gap-1"><i class="ph-bold ph-linkedin-logo"></i> LinkedIn</span>
+          </div>
         </div>
 
         <!-- Husham -->
-        <div class="sq-card">
-          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-            <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#34c759,#30d158);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:white;flex-shrink:0;">H</div>
+        <div class="sq-card !p-6 flex flex-col h-full">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center text-2xl font-bold text-white shrink-0 shadow-lg shadow-emerald-500/30">H</div>
             <div>
-              <div style="font-size:15px;font-weight:700;color:var(--text);">Mohd Husham</div>
-              <div style="font-size:11px;color:#34c759;font-weight:600;margin-top:2px;">Backend & Data Engineer</div>
+              <div class="text-lg font-bold text-slate-900 dark:text-white">Mohd Husham</div>
+              <div class="text-[12px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider mt-1">Backend & Data Engineer</div>
             </div>
           </div>
-          <p style="font-size:13px;color:var(--text-sub);line-height:1.6;margin-bottom:14px;">
+          <p class="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed mb-6 flex-1">
             Responsible for database architecture, Firestore data modelling, security rules design, and backend data flow planning.
           </p>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">
-            <span class="skill-tag">Firestore</span>
-            <span class="skill-tag">Database Design</span>
-            <span class="skill-tag">Security Rules</span>
-            <span class="skill-tag">Data Modelling</span>
-            <span class="skill-tag">Firebase Auth</span>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="skill-tag !text-[10px] !px-2.5 !py-1">Firestore</span>
+            <span class="skill-tag !text-[10px] !px-2.5 !py-1">DB Design</span>
+            <span class="skill-tag !text-[10px] !px-2.5 !py-1">Security Rules</span>
+            <span class="skill-tag !text-[10px] !px-2.5 !py-1">Auth</span>
           </div>
-          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-s);">
-          <div style="display:flex;gap:14px;flex-wrap:wrap;">
-            <a href="#" target="_blank" style="font-size:12px;color:var(--accent);font-weight:600;text-decoration:none;">GitHub → (coming soon)</a>
-            <a href="#" target="_blank" style="font-size:12px;color:var(--text-sub);font-weight:600;text-decoration:none;">LinkedIn → (coming soon)</a>
-          </div>          </div>
+          <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-4">
+            <span class="text-[12px] font-bold text-slate-400 dark:text-slate-600 cursor-not-allowed flex items-center gap-1"><i class="ph-bold ph-github-logo"></i> GitHub</span>
+            <span class="text-[12px] font-bold text-slate-400 dark:text-slate-600 cursor-not-allowed flex items-center gap-1"><i class="ph-bold ph-linkedin-logo"></i> LinkedIn</span>
+          </div>
         </div>
 
       </div>
     </div>
 
     <!-- Institution -->
-    <div class="sq-card sq-fade-in">
-      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:16px;">Institution</p>
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div style="width:48px;height:48px;border-radius:12px;background:var(--bg);border:1px solid var(--border-s);display:flex;align-items:center;justify-content:center;color:var(--text);flex-shrink:0;">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 21h18"></path>
-            <path d="M9 8h1"></path>
-            <path d="M14 8h1"></path>
-            <path d="M9 12h1"></path>
-            <path d="M14 12h1"></path>
-            <path d="M9 16h1"></path>
-            <path d="M14 16h1"></path>
-            <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
-          </svg>
+    <div class="sq-card bg-slate-50 dark:bg-slate-800/50 border-none mt-10">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-700 dark:text-slate-300 text-2xl shrink-0">
+          <i class="ph-fill ph-buildings"></i>
         </div>
         <div>
-          <div style="font-size:14px;font-weight:600;color:var(--text);">GH Raisoni College of Engineering and Management</div>
-          <div style="font-size:12px;color:var(--text-sub);margin-top:3px;">Jalgaon, Maharashtra — BCA Department — Batch 2023–26</div>
+          <h3 class="text-[15px] font-bold text-slate-900 dark:text-white">GH Raisoni College of Engineering and Management</h3>
+          <p class="text-[13px] text-slate-500 dark:text-slate-400 mt-1">Jalgaon, Maharashtra — BCA Department — Batch 2023–26</p>
         </div>
       </div>
     </div>
 
-  </div>
+  </main>
 
   <!-- Footer -->
-  <footer style="border-top:1px solid var(--border-s);padding:24px 20px;text-align:center;">
-    <p style="font-size:12px;color:var(--text-dim);">© 2026 SmartQueue — <a href="index.html" style="color:var(--accent);text-decoration:none;">Back to Home</a></p>
+  <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center mt-auto">
+    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+      &copy; 2026 SmartQueue Systems — <a href="index.html" class="text-brand-600 dark:text-brand-400 hover:underline">Back to Home</a>
+    </p>
   </footer>
 
 </body>
